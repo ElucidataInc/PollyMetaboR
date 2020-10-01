@@ -19,7 +19,7 @@ create_xcms_object_from_elmaven <- function(maven_output_df = NULL){
     return (NULL)  
   }
   
-  if (!identical(class(maven_output_df), "data.frame")){
+  if (!identical(as.character(class(maven_output_df)), "data.frame")){
     warning("The maven_output_df parameter is not a dataframe")
     return (NULL)  
   }
