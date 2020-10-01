@@ -21,14 +21,47 @@
 #' create_xcms_object_from_elmaven(maven_output_df)
 #' @import CAMERA dplyr stringr
 #' @export
-perform_annotation_by_camera <- function(xcms_object, polarity = NULL, ppm = 5, mzabs = 0.01,
+perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, ppm = 5, mzabs = 0.01,
                                          adducts_rules = NULL, cor_exp_th = 0.75, pval = 0.05,
                                          perfwhm = 0.6, sigma = 6, maxcharge = 3, maxiso = 4, 
                                          minfrac = 0.5, multiplier = 3, max_peaks = 100){
-  message("CAMERA Run Started...")
+  message("Perform Annotation BY CAMERA Started...")
   require(CAMERA)
   require(dplyr)
   require(stringr)
+  
+  if (identical(xcms_object, NULL)){
+    warning("The xcms_object is NULL")
+    return (NULL)  
+  }
+  
+  if (!identical(as.character(class(xcms_object)), "xcmsSet")){
+    warning(" The xcms_object is not the xcmsSet object")
+    return (NULL)  
+  }
+  
+  if (identical(polarity, NULL)){
+    warning("Polarity is NULL")
+    return (NULL)  
+  }
+  
+  if (!(polarity %in% c("positive", "negative"))){
+    warning("Please select polarity from positive and negative")
+    return (NULL)  
+  }
+  
+  if (!identical(adducts_rules, NULL)){
+    if (!identical(as.character(class(adducts_rules)), "data.frame")){
+      warning("The adducts_rules parameter is not a dataframe")
+      return (NULL)  
+    }
+    
+    adducts_rules_required_cols <- c('name', 'nmol', 'charge', 'massdiff', 'oidscore', 'quasi', 'ips')
+    if (!all(adducts_rules_required_cols %in% colnames(adducts_rules))){
+      warning(c("The adducts_rules dataframe should have the following columns: ", paste0(adducts_rules_required_cols, collapse = ", ")))
+      return (NULL)  
+    }
+  }
   
   an <- xsAnnotate(xcms_object)
   anF <- groupFWHM(an, sigma = sigma, perfwhm = perfwhm, intval = "maxo")
@@ -37,7 +70,7 @@ perform_annotation_by_camera <- function(xcms_object, polarity = NULL, ppm = 5, 
   anFA <- findAdducts(anI, ppm = ppm, mzabs = mzabs,  multiplier = multiplier, polarity = polarity, rules = adducts_rules, max_peaks = max_peaks, intval = "maxo")
   annotated_peaks_df <- getPeaklist(anFA)
   
-  message("CAMERA Run Completed...")
+  message("Perform Annotation BY CAMERA Completed...")
   
   return(annotated_peaks_df)
 }

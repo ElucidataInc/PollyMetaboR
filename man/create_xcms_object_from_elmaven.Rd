@@ -4,7 +4,7 @@
 \alias{create_xcms_object_from_elmaven}
 \title{create_xcms_object_from_elmaven}
 \usage{
-create_xcms_object_from_elmaven(maven_output_df)
+create_xcms_object_from_elmaven(maven_output_df = NULL)
 }
 \arguments{
 \item{maven_output_df}{The peak detailed format of El-MAVEN output}

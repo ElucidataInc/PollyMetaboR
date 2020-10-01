@@ -8,15 +8,31 @@
 #' create_xcms_object_from_elmaven(maven_output_df)
 #' @import CAMERA dplyr stringr
 #' @export
-create_xcms_object_from_elmaven <- function(maven_output_df){
+create_xcms_object_from_elmaven <- function(maven_output_df = NULL){
   message("Make XCMS Object Started...")
   require(CAMERA)
   require(dplyr)
   require(stringr)
   
+  if (identical(maven_output_df, NULL)){
+    warning("The maven_output_df is NULL")
+    return (NULL)  
+  }
+  
+  if (!identical(class(maven_output_df), "data.frame")){
+    warning("The maven_output_df parameter is not a dataframe")
+    return (NULL)  
+  }
+  
+  required_cols <- c('peakMz', 'mzmin', 'mzmax', 'rt', 'rtmin', 'rtmax', 'groupId', 'sample', 'peakIntensity', 'peakAreaCorrected')  
+  if (!all(required_cols %in% colnames(maven_output_df))){
+    warning(c("The maven_output_df dataframe should have the following columns: ", paste0(required_cols, collapse = ", ")))
+    return (NULL)
+  }
+  
   # Make peaks df
   maven_output_df$Index <- 1:length(rownames(maven_output_df))
-
+  
   elmaven_peaks_df <- maven_output_df
   samples_list <- as.vector(unique(maven_output_df$sample))
   for (sample_index in 1:length(samples_list)){
@@ -36,7 +52,7 @@ create_xcms_object_from_elmaven <- function(maven_output_df){
   metadata_df$class <- "sample"
   row.names(metadata_df) <- metadata_df$sample
   metadata_df$sample <- NULL
-
+  
   # Make groupId list
   groupIdx_list <- list()
   
@@ -64,14 +80,13 @@ create_xcms_object_from_elmaven <- function(maven_output_df){
   elmaven_groups_df <- elmaven_groups_df[c('mzmed', 'mzmin', 'mzmax', 'rtmed', 'rtmin' ,'rtmax', 'groupId')]
   
   # Make xcms object
-  xs1 <- new("xcmsSet", peaks = as.matrix(elmaven_peaks_df),
-             groups = as.matrix(elmaven_groups_df),
-             groupidx = groupIdx_list,
-             phenoData = metadata_df,
-             filepaths = as.vector(row.names(metadata_df)))
-
-  message("Make XCMS Object Completed...")
-
-  return(xs1)
+  xcms_obj <- new("xcmsSet", peaks = as.matrix(elmaven_peaks_df),
+                  groups = as.matrix(elmaven_groups_df),
+                  groupidx = groupIdx_list,
+                  phenoData = metadata_df,
+                  filepaths = as.vector(row.names(metadata_df)))
   
+  message("Make XCMS Object Completed...")
+  
+  return(xcms_obj)
 }

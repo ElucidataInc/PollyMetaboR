@@ -5,7 +5,7 @@
 \title{perform_annotation_by_camera}
 \usage{
 perform_annotation_by_camera(
-  xcms_object,
+  xcms_object = NULL,
   polarity = NULL,
   ppm = 5,
   mzabs = 0.01,
