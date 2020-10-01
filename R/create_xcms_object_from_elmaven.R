@@ -9,7 +9,7 @@
 #' @import CAMERA dplyr stringr
 #' @export
 create_xcms_object_from_elmaven <- function(maven_output_df = NULL){
-  message("Make XCMS Object Started...")
+  message("Create XCMS Object From ElMaven Started...")
   require(CAMERA)
   require(dplyr)
   require(stringr)
@@ -86,7 +86,7 @@ create_xcms_object_from_elmaven <- function(maven_output_df = NULL){
                   phenoData = metadata_df,
                   filepaths = as.vector(row.names(metadata_df)))
   
-  message("Make XCMS Object Completed...")
+  message("Create XCMS Object From ElMaven Completed...")
   
   return(xcms_obj)
 }

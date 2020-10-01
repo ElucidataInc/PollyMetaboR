@@ -51,11 +51,11 @@ perform_annotation_by_camera(
 \item{max_peaks}{How many peaks will be calculated in every thread using the parallel mode}
 }
 \value{
-xcms object
+A dataframe of annotated peaks
 }
 \description{
 It performs annotation by CAMERA using different functions of it.
 }
 \examples{
-create_xcms_object_from_elmaven(maven_output_df)
+perform_annotation_by_camera(xcms_object, polarity = "positive", ppm = 5, mzabs = 0.01)
 }

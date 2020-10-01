@@ -16,9 +16,9 @@
 #' @param minfrac The percentage number of samples, which must satisfy the C12/C13 rule for isotope annotation
 #' @param multiplier If no ruleset is provided, calculate ruleset with max. number n of [nM+x] cluster ions
 #' @param max_peaks How many peaks will be calculated in every thread using the parallel mode
-#' @return xcms object
+#' @return A dataframe of annotated peaks
 #' @examples
-#' create_xcms_object_from_elmaven(maven_output_df)
+#' perform_annotation_by_camera(xcms_object, polarity = "positive", ppm = 5, mzabs = 0.01)
 #' @import CAMERA dplyr stringr
 #' @export
 perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, ppm = 5, mzabs = 0.01,
