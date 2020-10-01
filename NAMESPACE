@@ -2,6 +2,7 @@
 
 export(create_xcms_object_from_elmaven)
 export(perform_annotation_by_camera)
+export(restructure_camera_annotations)
 import(CAMERA)
 import(dplyr)
 import(stringr)
