@@ -15,11 +15,11 @@ restructure_camera_annotations(
 \item{polarity}{The polarity of the data}
 }
 \value{
-xcms object
+A dataframe with restructure camera output
 }
 \description{
 It restructures the camera output to group features
 }
 \examples{
-create_xcms_object_from_elmaven(maven_output_df)
+restructure_camera_annotations(annotated_peaks_df, polarity = 'positive')
 }

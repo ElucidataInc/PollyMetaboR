@@ -4,9 +4,9 @@
 #'
 #' @param annotated_peaks_df The camera output
 #' @param polarity The polarity of the data
-#' @return xcms object
+#' @return A dataframe with restructure camera output
 #' @examples
-#' create_xcms_object_from_elmaven(maven_output_df)
+#' restructure_camera_annotations(annotated_peaks_df, polarity = 'positive')
 #' @import dplyr
 #' @export
 restructure_camera_annotations <- function(annotated_peaks_df = NULL, polarity = 'positive') {
