@@ -19,7 +19,7 @@
 #' @return A dataframe of annotated peaks
 #' @examples
 #' perform_annotation_by_camera(xcms_object, polarity = "positive", ppm = 5, mzabs = 0.01)
-#' @import CAMERA dplyr stringr
+#' @import CAMERA
 #' @export
 perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, ppm = 5, mzabs = 0.01,
                                          adducts_rules = NULL, cor_exp_th = 0.75, pval = 0.05,
@@ -27,8 +27,6 @@ perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, pp
                                          minfrac = 0.5, multiplier = 3, max_peaks = 100){
   message("Perform Annotation BY CAMERA Started...")
   require(CAMERA)
-  require(dplyr)
-  require(stringr)
   
   if (identical(xcms_object, NULL)){
     warning("The xcms_object is NULL")
@@ -63,12 +61,12 @@ perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, pp
     }
   }
   
-  an <- xsAnnotate(xcms_object)
-  anF <- groupFWHM(an, sigma = sigma, perfwhm = perfwhm, intval = "maxo")
-  anIC <- groupCorr(anF, calcCiS = FALSE, calcCaS = TRUE, cor_exp_th = cor_exp_th, pval = pval, intval = "maxo")
-  anI <- findIsotopes(anIC, maxcharge = maxcharge, maxiso = maxiso, ppm = ppm, mzabs = mzabs, intval = "maxo", minfrac = minfrac)
-  anFA <- findAdducts(anI, ppm = ppm, mzabs = mzabs,  multiplier = multiplier, polarity = polarity, rules = adducts_rules, max_peaks = max_peaks, intval = "maxo")
-  annotated_peaks_df <- getPeaklist(anFA)
+  an <- CAMERA::xsAnnotate(xcms_object)
+  anF <- CAMERA::groupFWHM(an, sigma = sigma, perfwhm = perfwhm, intval = "maxo")
+  anIC <- CAMERA::groupCorr(anF, calcCiS = FALSE, calcCaS = TRUE, cor_exp_th = cor_exp_th, pval = pval, intval = "maxo")
+  anI <- CAMERA::findIsotopes(anIC, maxcharge = maxcharge, maxiso = maxiso, ppm = ppm, mzabs = mzabs, intval = "maxo", minfrac = minfrac)
+  anFA <- CAMERA::findAdducts(anI, ppm = ppm, mzabs = mzabs,  multiplier = multiplier, polarity = polarity, rules = adducts_rules, max_peaks = max_peaks, intval = "maxo")
+  annotated_peaks_df <- CAMERA::getPeaklist(anFA)
   
   message("Perform Annotation BY CAMERA Completed...")
   
