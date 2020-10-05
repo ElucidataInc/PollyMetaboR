@@ -1,58 +1,119 @@
-# library(data.table)
-# library(dplyr)
-# library(future)
-# 
-# calculate_delta <- function(mz_source, mz_tolerence_unit = "ppm", mz_tolerence = 20){
-#     delta <- NULL
-#     if (mz_tolerence_unit == 'ppm'){
-#         delta <- mz_source * mz_tolerence * 10^(-6)
-#     }
-#     else if (mz_tolerence_unit == 'Da'){
-#         delta <- mz_tolerence
-#     }
-#     else {
-#         warning("Please select valid mass tolerence unit (ppm or Da)")
-#         return()
-#     }
-# 
-#     return(delta)
-# }
-# 
-# mz_search_comp_data <- function(mz_source, comp_data, delta){
-#     if (is.null(delta)){
-#         warning("Please input valid delta")
-#         return()
-#     }
-#     mzmin <- mz_source - delta
-#     mzmax <- mz_source + delta
-#     comp_data_filter <- filter(comp_data, mzMass >= mzmin & mzMass <= mzmax)
-# 
-#     return(comp_data_filter)
-# }
-# 
+#' calculate_mz_delta
+#'
+#' It calculates delta of particular mz value
+#'
+#' @param mz_source mz source numeric value
+#' @param mz_tolerence_unit The mz tolerance unit (ppm or Da)
+#' @param mz_tolerence Value of mz tolerence
+#' @return A numeric value of mz delta 
+#' @examples
+#' calculate_mz_delta(mz_source, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20)
+#' @import dplyr
+#' @export
+calculate_mz_delta <- function(mz_source = NULL, mz_tolerence_unit = "ppm", mz_tolerence = 20){
+  message("Calculate MZ Delta Started...")
+  
+  if (identical(mz_source, NULL)){
+    warning("The mz_source is NULL")
+    return (NULL)
+  }
+  
+  delta <- NULL
+  if (mz_tolerence_unit == 'ppm'){
+    delta <- mz_source * mz_tolerence * 10^(-6) 
+  }
+  else if (mz_tolerence_unit == 'Da'){
+    delta <- mz_tolerence
+  }
+  else {
+    warning("Please select valid mass tolerence unit (ppm or Da)")
+    return (NULL)
+  }
+  
+  message("Calculate MZ Delta Completed...")
+  
+  return(delta)
+}
+
+#' mz_search_with_comp_data
+#'
+#' It searches the mz within compoind database
+#'
+#' @param mz_source mz source numeric value
+#' @param comp_data reference compound database used for mz seraching with compulsory mzMass column
+#' @param mz_tolerence_unit The mz tolerance unit (ppm or Da)
+#' @param mz_tolerence Value of mz tolerence
+#' @return A dataframe with mapped metabolites 
+#' @examples
+#' mz_search_with_comp_data(mz_source, comp_data, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20)
+#' @import dplyr
+#' @export
+mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "ppm", mz_tolerence = 20){
+  message("MZ Search With Comp Data Started...")
+  require(dplyr)
+  
+  if (identical(mz_source, NULL)){
+    warning("The mz_source is NULL")
+    return (NULL)
+  }  
+  
+  if ((!class(comp_data)=='data.frame') | (("mzMass" %in% colnames(comp_data))==FALSE)){
+    warning("Please input valid compound database (a dataframe containing 'mzMass' column)")
+    return (NULL)
+  }
+  
+  delta <- PollyMetaboR::calculate_mz_delta(mz_source, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence)
+  
+  if (identical(delta, NULL)){
+    warning("Please input valid parameters")
+    return (NULL)
+  }
+  
+  mzmin <- mz_source - delta
+  mzmax <- mz_source + delta
+  comp_data_filter <- dplyr::filter(comp_data, mzMass >= mzmin & mzMass <= mzmax)
+  
+  message("MZ Search With Comp Data Completed...")
+  
+  return(comp_data_filter)
+}
 
 #' mz_match_check
 #'
-#' 
+#' It checks if mz_target is within the delta of mz_source
 #'
-#' @param mz_source mz source value
-#' @param mz_target mz target value
+#' @param mz_source mz source numeric value
+#' @param mz_target mz target numeric value
 #' @param mz_tolerence_unit The mz tolerance unit (ppm or Da)
 #' @param mz_tolerence Value of mz tolerence
 #' @return Return TRUE if mz source and mz target are within mz tolerence 
 #' @examples
 #' mz_match_check(mz_source, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20)
 #' @export
-mz_match_check <- function(mz_source, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20){
+mz_match_check <- function(mz_source = NULL, mz_target = NULL, mz_tolerence_unit = "ppm", mz_tolerence = 20){
   message("MZ Match Check Started...")
   
+  if (identical(mz_source, NULL)){
+    warning("The mz_source is NULL")
+    return (NULL)
+  }
+  
+  if (identical(mz_target, NULL)){
+    warning("The mz_target is NULL")
+    return (NULL)      
+  }
+  
   mz_delta_bool_check <- FALSE
-  delta <- calculate_delta(mz_source, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence)
-  if (!is.null(delta)){
-    mz_diff <- abs(mz_source - mz_target)
-    if (delta >= mz_diff){
-      mz_delta_bool_check <- TRUE
-    }
+  delta <- PollyMetaboR::calculate_mz_delta(mz_source, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence)
+  
+  if (identical(delta, NULL)){
+    warning("Please input valid parameters")
+    return (NULL)
+  }
+  
+  mz_diff <- abs(mz_source - mz_target)
+  if (delta >= mz_diff){
+    mz_delta_bool_check <- TRUE
   }
   
   message("MZ Match Check Completed...")
@@ -74,7 +135,7 @@ mz_match_check <- function(mz_source, mz_target, mz_tolerence_unit = "ppm", mz_t
 #' @examples
 #' perform_metabolite_identification(mz_data, comp_data, mz_colname = 'basemass',
 #'                                   mz_tolerence_unit = "ppm", mz_tolerence = 20, numcores = 2)
-#' @import data.table dplyr
+#' @import data.table dplyr future
 #' @export
 perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL, 
                                               mz_colname = 'basemass', mz_tolerence_unit = "ppm",
@@ -82,6 +143,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   message("Perform Metabolite Identification Started...")
   require(data.table)
   require(dplyr)
+  require(future)
   
   if(identical(mz_data, NULL)){
     warning("No mz_data was given")
@@ -125,8 +187,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
     
   mz_identify_metab <- function(mz_row){
     mz_source <- as.numeric(mz_row[[mz_colname]])
-    delta <- calculate_delta(mz_source, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence)
-    comp_data_filter <- mz_search_comp_data(mz_source, comp_data, delta)
+    comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence))
     if (nrow(comp_data_filter) > 0){
       interm_df <- cbind(mz_row, comp_data_filter, row.names = NULL)   
     }
@@ -159,7 +220,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   for (i in names(cores_split_mz_data_list)){
     identify_metab_future <- lapply(cores_split_mz_data_list[[i]],
                                     function(split_mz_data_element) future::future({run_split_df(split_mz_data_element)}))
-    metabolite_identified_list <- lapply(identify_metab_future, value) # grab the results
+    metabolite_identified_list <- lapply(identify_metab_future, future::value) # grab the results
     interm_core_split_future_df <- data.table::rbindlist(metabolite_identified_list, fill=TRUE)
     metabolite_identified_df <- rbind(metabolite_identified_df, interm_core_split_future_df)  
   }
