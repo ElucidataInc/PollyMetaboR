@@ -7,7 +7,7 @@
 #' @param replace_in the column where names are present (it can be a column or "by_columns")
 #' @return The named vector of samplenames using make.names
 #' @examples
-#' replace_names_by_names_vector(data_df, names_vector, replace_in = "sample)
+#' replace_names_by_names_vector(data_df, names_vector, replace_in = "sample")
 #' @import dplyr
 #' @export
 replace_names_by_names_vector <- function(data_df = NULL, names_vector = NULL, replace_in = NULL){

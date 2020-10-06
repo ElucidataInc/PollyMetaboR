@@ -23,3 +23,6 @@ The named vector of samplenames using make.names
 \description{
 It returns a dataframe after replacing names using names vector.
 }
+\examples{
+replace_names_by_names_vector(data_df, names_vector, replace_in = "sample")
+}
