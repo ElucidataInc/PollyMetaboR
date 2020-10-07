@@ -21,7 +21,7 @@ data(KEGG_mzMass, package = "PollyMetaboR")
 
 
 ```R
-xcms_obj <- create_xcms_object_from_elmaven(maven_data)
+xcms_obj <- create_xcms_object_from_elmaven(demo_peak_detailed_elmaven)
 ```
 
 #### Perform Annotation using CAMERA
