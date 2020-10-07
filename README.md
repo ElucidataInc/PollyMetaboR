@@ -1,6 +1,6 @@
 ### Introduction
 
-The PollyMetaboR can be used to process metabolomics data generated using untarged approach. This package works on the peak detailed format of El-MAVEN output.  
+The PollyMetaboR can be used to process metabolomics data generated using untargeted approach. This package works on the peak detailed format of El-MAVEN output.  
 
 ### Steps to use this package
 
@@ -28,7 +28,7 @@ xcms_obj <- create_xcms_object_from_elmaven(maven_data)
 
 
 ```R
-camera_output <- PollyMetaboR::perform_annotation_by_camera(xcms_obj, polarity = "positive", ppm = 10, mzabs = 0.1)
+camera_output <- perform_annotation_by_camera(xcms_obj, polarity = "positive", ppm = 10, mzabs = 0.1)
 ```
 
 
@@ -36,14 +36,14 @@ camera_output <- PollyMetaboR::perform_annotation_by_camera(xcms_obj, polarity =
 
 
 ```R
-restructure_camera <- PollyMetaboR::restructure_camera_annotations(camera_output, polarity = "positive")
+restructure_camera <- restructure_camera_annotations(camera_output, polarity = "positive")
 ```
 
 #### Get feature representative for each feature group
 
 
 ```R
-representative_df <- PollyMetaboR::get_feature_group_representative(restructure_camera$combined, polarity = "positive")
+representative_df <- get_feature_group_representative(restructure_camera$combined, polarity = "positive")
 
 ```
 
@@ -52,7 +52,7 @@ representative_df <- PollyMetaboR::get_feature_group_representative(restructure_
 
 
 ```R
-identified_df <- PollyMetaboR::perform_metabolite_identification(mz_data = representative_df, comp_data = KEGG_mzMass, mz_colname = 'basemass', mz_tolerence_unit= 'ppm', mz_tolerence = 20, numcores = 4)
+identified_df <- perform_metabolite_identification(mz_data = representative_df, comp_data = KEGG_mzMass, mz_colname = 'basemass', mz_tolerence_unit= 'ppm', mz_tolerence = 20, numcores = 4)
 
 ```
 
@@ -60,7 +60,7 @@ identified_df <- PollyMetaboR::perform_metabolite_identification(mz_data = repre
 
 
 ```R
-metab_ident <- PollyMetaboR::merge_identified_with_restructured_camera(identified_df, restructure_camera$combined)
+metab_ident <- merge_identified_with_restructured_camera(identified_df, restructure_camera$combined)
 
 ```
 
@@ -79,5 +79,5 @@ p <- plot_hist_elements_frequency(restructure_camera$combined$pcgroup, frequency
 
 
 ```R
-metscape <- PollyMetaboR::make_group_summary_from_metab_ident_format(identified_df)
+metscape <- make_group_summary_from_metab_ident_format(identified_df)
 ```
