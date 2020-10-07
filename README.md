@@ -52,7 +52,7 @@ representative_df <- PollyMetaboR::get_feature_group_representative(restructure_
 
 
 ```R
-identified_df <- PollyMetaboR::perform_metabolite_identification(mz_data = representative_df, comp_data = KEGG_mzMass, mz_colname = 'basemass', mz_tolerence_unit= 'ppm', mz_tolerence = 200, numcores = 4)
+identified_df <- PollyMetaboR::perform_metabolite_identification(mz_data = representative_df, comp_data = KEGG_mzMass, mz_colname = 'basemass', mz_tolerence_unit= 'ppm', mz_tolerence = 20, numcores = 4)
 
 ```
 
