@@ -1,7 +1,7 @@
 Package: PollyMetaboR
 Type: Package
 Title: PAckage specific to metabolomics
-Version: 0.0.1
+Version: 0.0.2
 Author: Sunil Dhakad
 Maintainer: The package maintainer <sunil.dhakad@elucidata.io>
 Description: This package contains functions used in metabolomics.
@@ -9,18 +9,12 @@ Depends:
     R (>= 3.6.0)
 Imports:
     CAMERA (>= 1.42.0),
-    limma (>= 1.9.4),
-    matrixStats(>= 0.55.0),
-    stats(>= 3.6.1),
     stringr(>= 1.4.0),
-    ggplot2(>= 3.2.1),
     plotly(>= 4.9.0),
-    ggsci(>= 2.9),
-    latex2exp(>= 0.4.0),
     dplyr(>= 0.8.3),
-    ggrepel(>= 0.8.1),
-    SuperExactTest(>= 1.0.7),
-    UpSetR(>= 1.4.0)
+    data.table(>= 1.12.6),
+    future(>= 1.16.0),
+    gtools(>= 3.8.1)
 Suggests:
     testthat,
     devtools,

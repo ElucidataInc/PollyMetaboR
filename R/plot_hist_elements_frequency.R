@@ -10,7 +10,7 @@
 #' @return The plotly object of bar plot
 #' @examples
 #' plot_hist_elements_frequency(elements_vec, frequency_type = "by_occurrence")
-#' @import dplyr gtools
+#' @import plotly
 #' @export
 plot_hist_elements_frequency <- function(elements_vec = NULL, frequency_type = "by_occurrence", plot_title = NULL, xaxis_title = NULL, yaxis_title = NULL){
   message("Plot Histogram Elements Frequency Started...")
