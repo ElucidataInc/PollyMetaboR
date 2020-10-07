@@ -1,29 +1,84 @@
-# README #
+### Introduction
 
-This README would normally document whatever steps are necessary to get your application up and running.
+The PollyMetaboR can be used to process metabolomics data generated using untarged approach. This package works on the peak detailed format of El-MAVEN output.  
 
-### What is this repository for? ###
+### Steps to use this package
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
 
-### How do I get set up? ###
+```R
+library(PollyMetaboR)
+```
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+#### Read El-MAVEN output
 
-### Contribution guidelines ###
 
-* Writing tests
-* Code review
-* Other guidelines
+```R
+maven_data <- read.csv("test_data/test.csv", check.names = FALSE, stringsAsFactors = FALSE)
+```
 
-### Who do I talk to? ###
+#### Make XCMS Object
 
-* Repo owner or admin
-* Other community or team contact
+
+```R
+xcms_obj <- create_xcms_object_from_elmaven(maven_data)
+```
+
+#### Perform Annotation using CAMERA
+
+
+```R
+camera_output <- PollyMetaboR::perform_annotation_by_camera(xcms_obj, polarity = "positive", ppm = 10, mzabs = 0.1)
+```
+
+
+#### Restructure CAMERA output
+
+
+```R
+restructure_camera <- PollyMetaboR::restructure_camera_annotations(camera_output, polarity = "positive")
+```
+
+#### Get feature representative for each feature group
+
+
+```R
+representative_df <- PollyMetaboR::get_feature_group_representative(restructure_camera$combined, polarity = "positive")
+
+```
+
+
+#### Perform Metabolite Identification
+
+
+```R
+compound_db_df <- read.csv('test_data/KEGG_mzMass.csv', stringsAsFactors = FALSE)
+identified_df <- PollyMetaboR::perform_metabolite_identification(mz_data = representative_df, comp_data = compound_db_df, mz_colname = 'basemass', 
+                                                mz_tolerence_unit= 'ppm', mz_tolerence = 200, numcores = 4)
+
+```
+
+#### Merge identified data with restrutured camera output
+
+
+```R
+metab_ident <- PollyMetaboR::merge_identified_with_restructured_camera(identified_df, restructure_camera$combined)
+
+```
+
+#### Summary of Annotation
+
+
+```R
+p <- plot_hist_elements_frequency(restructure_camera$combined$pcgroup, frequency_type = "by_occurrence", 
+                                  plot_title = "Number of features vs counts of pcgroup",
+                                  xaxis_title = "Number of features",
+                                  yaxis_title = "Counts of pcgroup")
+
+```
+
+#### Make group summary format from identification step output format
+
+
+```R
+metscape <- PollyMetaboR::make_group_summary_from_metab_ident_format(identified_df)
+```
