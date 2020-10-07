@@ -9,11 +9,12 @@ The PollyMetaboR can be used to process metabolomics data generated using untarg
 library(PollyMetaboR)
 ```
 
-#### Read El-MAVEN output
+#### Load Data
 
 
 ```R
-maven_data <- read.csv("test_data/test.csv", check.names = FALSE, stringsAsFactors = FALSE)
+data(demo_peak_detailed_elmaven, package = "PollyMetaboR")
+data(KEGG_mzMass, package = "PollyMetaboR")
 ```
 
 #### Make XCMS Object
@@ -51,9 +52,7 @@ representative_df <- PollyMetaboR::get_feature_group_representative(restructure_
 
 
 ```R
-compound_db_df <- read.csv('test_data/KEGG_mzMass.csv', stringsAsFactors = FALSE)
-identified_df <- PollyMetaboR::perform_metabolite_identification(mz_data = representative_df, comp_data = compound_db_df, mz_colname = 'basemass', 
-                                                mz_tolerence_unit= 'ppm', mz_tolerence = 200, numcores = 4)
+identified_df <- PollyMetaboR::perform_metabolite_identification(mz_data = representative_df, comp_data = KEGG_mzMass, mz_colname = 'basemass', mz_tolerence_unit= 'ppm', mz_tolerence = 200, numcores = 4)
 
 ```
 
