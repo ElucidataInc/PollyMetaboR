@@ -22,16 +22,21 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
     return (NULL)
   }
   
-  utp_output_cols <- colnames(metab_identified_df)
-  compoundId_colname <- colnames(metab_identified_df)[length(colnames(metab_identified_df))-2]
-  default_cols  <- c('mz', 'mzmin', 'mzmax', 'rt', 'rtmin', 'rtmax', 'groupId',
+  default_cols  <- c('mz', 'mzmin', 'mzmax', 'rt', 'rtmin', 'rtmax', 'groupId', 
                      'isotopes', 'adduct', 'pcgroup', 'adduct_type', 'basemass',
-                     'isotope_id', 'isotope_type', 'feature_group', 'mzMass', 
-                     compoundId_colname, 'Name', 'Formula')
+                     'isotope_id', 'isotope_type', 'feature_group', 'compound', 
+                     'id', 'formula', 'mass')
+  utp_output_cols <- colnames(metab_identified_df)
+  
+  if (!all(default_cols %in% utp_output_cols)){
+    warning(c("The metab_identified_df should have the following columns :", paste0(default_cols, collapse = ", ")))
+    return (NULL)  
+  }
+  
   samples_vec <- utp_output_cols[!utp_output_cols %in% default_cols]
-  subset_cols <- c("groupId", "mz", "rt", compoundId_colname,  "Name", "Formula", samples_vec)
-  maven_output_format <- metab_identified_df[,subset_cols]
-  maven_output_format  <- maven_output_format %>% dplyr::rename_at(vars(c("mz","rt", compoundId_colname, "Name", "Formula")), ~ c("medMz", "medRt", "compoundId", "compound", "formula"))
+  subset_cols <- c("groupId", "mz", "rt", "compound",  "id", "formula", samples_vec)
+  maven_output_format <- metab_identified_df[, subset_cols, drop = FALSE]
+  maven_output_format  <- maven_output_format %>% dplyr::rename_at(vars(c("mz","rt", "id")), ~ c("medMz", "medRt", "compoundId"))
   maven_output_format  <- maven_output_format %>% dplyr::mutate(label = "", goodPeakCount= "",maxQuality="", adductName="", isotopeLabel="",expectedRtDiff="",ppmDiff="",parent="")
   maven_output_format$metaGroupId <- maven_output_format$groupId
   maven_default_cols <- c("label", "metaGroupId", "groupId", "goodPeakCount", "medMz",
