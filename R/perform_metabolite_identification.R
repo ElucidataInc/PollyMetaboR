@@ -37,7 +37,7 @@ calculate_mz_delta <- function(mz_source = NULL, mz_tolerence_unit = "ppm", mz_t
 
 #' mz_search_with_comp_data
 #'
-#' It searches the mz within compoind database
+#' It searches the mz within compound database
 #'
 #' @param mz_source mz source numeric value
 #' @param comp_data reference compound database used for mz seraching with compulsory mzMass column
@@ -57,8 +57,8 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
     return (NULL)
   }  
   
-  if ((!class(comp_data)=='data.frame') | (("mzMass" %in% colnames(comp_data))==FALSE)){
-    warning("Please input valid compound database (a dataframe containing 'mzMass' column)")
+  if ((!class(comp_data)=='data.frame') | (("mass" %in% colnames(comp_data))==FALSE)){
+    warning("Please input valid compound database (a dataframe containing 'mass' column)")
     return (NULL)
   }
   
@@ -71,7 +71,7 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
   
   mzmin <- mz_source - delta
   mzmax <- mz_source + delta
-  comp_data_filter <- dplyr::filter(comp_data, mzMass >= mzmin & mzMass <= mzmax)
+  comp_data_filter <- dplyr::filter(comp_data, mass >= mzmin & mass <= mzmax)
   
   message("MZ Search With Comp Data Completed...")
   
@@ -149,32 +149,32 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
     warning("No mz_data was given")
     return (NULL)
   }
-    
+  
   if ((!class(mz_data)=='data.frame') & (!class(mz_data)=='numeric')){
     warning("Please input valid mz_data (a dataframe containing 'mz data' or a vector of 'mz values')")
     return (NULL)
   }
-
+  
   if(identical(comp_data, NULL)){
     warning("No comp_data was given")
     return (NULL)
   }
   
-  if ((!class(comp_data)=='data.frame') | (("mzMass" %in% colnames(comp_data))==FALSE)){
-    warning("Please input valid compound database (a dataframe containing 'mzMass' column)")
+  if ((!class(comp_data)=='data.frame') | (!any(c("mass", "formula") %in% colnames(comp_data)))){
+    warning("Please input valid compound database (a dataframe containing 'mass' or 'formula' column)")
     return (NULL)
   }
-    
+  
   if (class(mz_data)=='numeric'){
     mz_data <- data.frame(mz_index = 1: length(mz_data), mz_colname = mz_data)
     mz_data <- setnames(mz_data, "mz_colname", mz_colname)
   }
-    
+  
   if (!(mz_colname %in% colnames(mz_data))){
     warning(c("The ", mz_colname, " is not present in mz_data columns which should have basemass mz values"))
     return (NULL)
   }
-    
+  
   if (identical(mz_tolerence_unit, NULL)){
     warning("The mz_tolerence_unit is NULL")
     return (NULL)  
@@ -184,7 +184,13 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
     warning("The mz_tolerence_unit is not valid, please choose from ppm and Da")
     return (NULL)  
   }
-    
+  
+  if (!("mass" %in% colnames(comp_data))){
+    comp_data$mass <- NA
+  } 
+  
+  comp_data <- PollyMetaboR::calc_mass_from_formula_comp_data(comp_data)
+  
   mz_identify_metab <- function(mz_row){
     mz_source <- as.numeric(mz_row[[mz_colname]])
     comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence))
@@ -195,10 +201,10 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
       comp_data_cols <- colnames(comp_data_filter)
       interm_df <- mz_row
       interm_df[,comp_data_cols] <- NA   
-      }
+    }
     return(interm_df)
   }
-    
+  
   run_split_df <- function(split_mz_data_element){
     metabolite_identified_split_df <- data.frame()
     for (row_index in 1:nrow(split_mz_data_element)){
@@ -206,13 +212,13 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
       interm_df <- mz_identify_metab(mz_row)
       metabolite_identified_split_df <- dplyr::bind_rows(metabolite_identified_split_df, interm_df)
       rownames(metabolite_identified_split_df) <- NULL
-      }
+    }
     return(metabolite_identified_split_df)
   }
-    
+  
   ###Split mz data into chunks of 1000 features each###
   split_mz_data_list <- split(mz_data, (as.numeric(rownames(mz_data))-1) %/% 1000)
-    
+  
   ###Run each future run on only specified core (numcores)###
   cores_split_mz_data_list <- split(split_mz_data_list, ((1:length(split_mz_data_list))-1) %/% numcores)
   
@@ -226,8 +232,8 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   }
   
   metabolite_identified_df <- as.data.frame(metabolite_identified_df, stringsAsFactors = FALSE)
-    
+  
   message("Perform Metabolite Identification Completed...")
-    
+  
   return(metabolite_identified_df)
 }

@@ -24,7 +24,7 @@ mz_search_with_comp_data(
 A dataframe with mapped metabolites
 }
 \description{
-It searches the mz within compoind database
+It searches the mz within compound database
 }
 \examples{
 mz_search_with_comp_data(mz_source, comp_data, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20)
