@@ -10,6 +10,7 @@ perform_metabolite_identification(
   mz_colname = "basemass",
   mz_tolerence_unit = "ppm",
   mz_tolerence = 20,
+  rt_tolerence = NULL,
   numcores = 2
 )
 }
@@ -23,6 +24,8 @@ perform_metabolite_identification(
 \item{mz_tolerence_unit}{The mz tolerance unit (ppm or Da)}
 
 \item{mz_tolerence}{Value of mz tolerence}
+
+\item{rt_tolerence}{Value of rt tolerence in minutes}
 
 \item{numcores}{Number of cores used for processing}
 }

@@ -43,12 +43,15 @@ calculate_mz_delta <- function(mz_source = NULL, mz_tolerence_unit = "ppm", mz_t
 #' @param comp_data reference compound database used for mz seraching with compulsory mzMass column
 #' @param mz_tolerence_unit The mz tolerance unit (ppm or Da)
 #' @param mz_tolerence Value of mz tolerence
+#' @param rt_source rt source numeric value in minutes
+#' @param rt_tolerence Value of rt tolerence in minutes
 #' @return A dataframe with mapped metabolites 
 #' @examples
 #' mz_search_with_comp_data(mz_source, comp_data, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20)
 #' @import dplyr
 #' @export
-mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "ppm", mz_tolerence = 20){
+mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "ppm", 
+                                     mz_tolerence = 20, rt_source = NULL, rt_tolerence = NULL){
   message("MZ Search With Comp Data Started...")
   require(dplyr)
   
@@ -62,6 +65,16 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
     return (NULL)
   }
   
+  if (identical(mz_tolerence_unit, NULL)){
+    warning("The mz_tolerence_unit is NULL")
+    return (NULL)  
+  }
+  
+  if (identical(mz_tolerence, NULL)){
+    warning("The mz_tolerence is NULL")
+    return (NULL)  
+  }
+  
   delta <- PollyMetaboR::calculate_mz_delta(mz_source, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence)
   
   if (identical(delta, NULL)){
@@ -71,7 +84,32 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
   
   mzmin <- mz_source - delta
   mzmax <- mz_source + delta
-  comp_data_filter <- dplyr::filter(comp_data, mass >= mzmin & mass <= mzmax)
+  comp_data_filter <- dplyr::filter(comp_data, mass >= mzmin & mass <= mzmax)  
+  
+  if ("rt" %in% colnames(comp_data_filter)){
+    
+    if (!identical(rt_source, NULL) && !identical(rt_tolerence, NULL)){
+      message("Matching comp_data with both mz and rt")
+      comp_data_filter <- comp_data_filter %>% dplyr::rename(rt_db = rt)
+      
+      comp_data_filter$rt_db <- as.numeric(comp_data_filter$rt_db)
+      
+      rt_bool <- !is.na(comp_data_filter$rt_db)
+      
+      comp_data_with_rt <- comp_data_filter[rt_bool, , drop = FALSE]
+      rtmin <- rt_source - rt_tolerence
+      rtmax <- rt_source + rt_tolerence
+      comp_data_filter_rt <- dplyr::filter(comp_data_with_rt, rt_db >= rtmin & rt_db <= rtmax)
+      
+      if (nrow(comp_data_filter_rt) >= 1){
+        comp_data_filter <- comp_data_filter_rt
+      } else {
+        comp_data_filter <- comp_data_filter[!rt_bool, , drop = FALSE]
+      } 
+    } else {
+      message("Matching comp_data with only mz")
+    }
+  }
   
   message("MZ Search With Comp Data Completed...")
   
@@ -177,16 +215,17 @@ calc_mass_from_formula_comp_data <- function(comp_data = NULL){
 #' @param mz_colname A mz column name present in mz_data dataframe
 #' @param mz_tolerence_unit The mz tolerance unit (ppm or Da)
 #' @param mz_tolerence Value of mz tolerence
+#' @param rt_tolerence Value of rt tolerence in minutes
 #' @param numcores Number of cores used for processing
 #' @return A dataframe with identified metabolites
 #' @examples
 #' perform_metabolite_identification(mz_data, comp_data, mz_colname = 'basemass',
-#'                                   mz_tolerence_unit = "ppm", mz_tolerence = 20, numcores = 2)
+#'                                   mz_tolerence_unit = "ppm", mz_tolerence = 20, rt_tolerence = 0.05)
 #' @import data.table dplyr future
 #' @export
 perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL, 
                                               mz_colname = 'basemass', mz_tolerence_unit = "ppm",
-                                              mz_tolerence = 20, numcores = 2){
+                                              mz_tolerence = 20, rt_tolerence = NULL, numcores = 2){
   message("Perform Metabolite Identification Started...")
   require(data.table)
   require(dplyr)
@@ -240,7 +279,8 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   
   mz_identify_metab <- function(mz_row){
     mz_source <- as.numeric(mz_row[[mz_colname]])
-    comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence))
+    rt_source <- as.numeric(mz_row[['rt']])
+    comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence, rt_source = rt_source, rt_tolerence = rt_tolerence))
     if (nrow(comp_data_filter) > 0){
       interm_df <- cbind(mz_row, comp_data_filter, row.names = NULL)   
     }
@@ -248,7 +288,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
       comp_data_cols <- colnames(comp_data_filter)
       interm_df <- mz_row
       interm_df[,comp_data_cols] <- NA   
-    }
+    } 
     return(interm_df)
   }
   
@@ -257,7 +297,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
     for (row_index in 1:nrow(split_mz_data_element)){
       mz_row <- split_mz_data_element[row_index,]
       interm_df <- mz_identify_metab(mz_row)
-      metabolite_identified_split_df <- dplyr::bind_rows(metabolite_identified_split_df, interm_df)
+      metabolite_identified_split_df <- data.table::rbindlist(list(metabolite_identified_split_df, interm_df), fill = TRUE)
       rownames(metabolite_identified_split_df) <- NULL
     }
     return(metabolite_identified_split_df)
@@ -274,7 +314,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
     identify_metab_future <- lapply(cores_split_mz_data_list[[i]],
                                     function(split_mz_data_element) future::future({run_split_df(split_mz_data_element)}))
     metabolite_identified_list <- lapply(identify_metab_future, future::value) # grab the results
-    interm_core_split_future_df <- data.table::rbindlist(metabolite_identified_list, fill=TRUE)
+    interm_core_split_future_df <- data.table::rbindlist(metabolite_identified_list, fill = TRUE)
     metabolite_identified_df <- rbind(metabolite_identified_df, interm_core_split_future_df)  
   }
   

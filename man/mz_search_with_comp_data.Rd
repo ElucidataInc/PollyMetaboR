@@ -8,7 +8,9 @@ mz_search_with_comp_data(
   mz_source,
   comp_data,
   mz_tolerence_unit = "ppm",
-  mz_tolerence = 20
+  mz_tolerence = 20,
+  rt_source = NULL,
+  rt_tolerence = NULL
 )
 }
 \arguments{
@@ -19,6 +21,10 @@ mz_search_with_comp_data(
 \item{mz_tolerence_unit}{The mz tolerance unit (ppm or Da)}
 
 \item{mz_tolerence}{Value of mz tolerence}
+
+\item{rt_source}{rt source numeric value in minutes}
+
+\item{rt_tolerence}{Value of rt tolerence in minutes}
 }
 \value{
 A dataframe with mapped metabolites
