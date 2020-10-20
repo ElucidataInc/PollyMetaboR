@@ -37,5 +37,5 @@ It restructures the camera output to group features
 }
 \examples{
 perform_metabolite_identification(mz_data, comp_data, mz_colname = 'basemass',
-                                  mz_tolerence_unit = "ppm", mz_tolerence = 20, numcores = 2)
+                                  mz_tolerence_unit = "ppm", mz_tolerence = 20, rt_tolerence = 0.05)
 }
