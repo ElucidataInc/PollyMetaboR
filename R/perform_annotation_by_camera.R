@@ -66,7 +66,7 @@ perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, pp
   anIC <- CAMERA::groupCorr(anF, calcCiS = FALSE, calcCaS = TRUE, cor_exp_th = cor_exp_th, pval = pval, intval = "maxo")
   anI <- CAMERA::findIsotopes(anIC, maxcharge = maxcharge, maxiso = maxiso, ppm = ppm, mzabs = mzabs, intval = "maxo", minfrac = minfrac)
   anFA <- CAMERA::findAdducts(anI, ppm = ppm, mzabs = mzabs,  multiplier = multiplier, polarity = polarity, rules = adducts_rules, max_peaks = max_peaks, intval = "maxo")
-  annotated_peaks_df <- PollyMetaboR::get_peak_list(anFA)
+  annotated_peaks_df <- PollyMetaboR::get_peak_list(anFA, intval = "maxo")
   
   message("Perform Annotation BY CAMERA Completed...")
   
