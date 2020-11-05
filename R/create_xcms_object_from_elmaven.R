@@ -30,6 +30,9 @@ create_xcms_object_from_elmaven <- function(maven_output_df = NULL){
     return (NULL)
   }
   
+  maven_output_df$peakMz <- as.numeric(maven_output_df$peakMz)
+  maven_output_df <- dplyr::filter(maven_output_df, !is.na(peakMz) & peakMz != 0)  
+  
   # Make peaks df
   maven_output_df$Index <- 1:length(rownames(maven_output_df))
   
@@ -37,10 +40,10 @@ create_xcms_object_from_elmaven <- function(maven_output_df = NULL){
   samples_list <- as.vector(unique(maven_output_df$sample))
   for (sample_index in 1:length(samples_list)){
     sample_val <- as.character(samples_list[sample_index])
-    elmaven_peaks_df <- elmaven_peaks_df %>% mutate(sample = replace(as.character(sample), sample == sample_val, sample_index))
+    elmaven_peaks_df <- elmaven_peaks_df %>% dplyr::mutate(sample = replace(as.character(sample), sample == sample_val, sample_index))
   }
   elmaven_peaks_df$sample <- as.numeric(elmaven_peaks_df$sample)
-  elmaven_peaks_df <- elmaven_peaks_df %>% rename_at(vars(c('peakMz', 'peakIntensity', 'peakAreaCorrected')), ~ c('mz', 'into', 'maxo'))
+  elmaven_peaks_df <- elmaven_peaks_df %>% dplyr::rename_at(vars(c('peakMz', 'peakIntensity', 'peakAreaCorrected')), ~ c('mz', 'into', 'maxo'))
   
   drops <- c('compound', 'compound', 'compoundId', 'formula')
   elmaven_peaks_df <- elmaven_peaks_df[ , !(names(elmaven_peaks_df) %in% drops)]
@@ -61,7 +64,7 @@ create_xcms_object_from_elmaven <- function(maven_output_df = NULL){
   index_count <- 0
   for (groupId_val in unique(maven_output_df$groupId)){
     index_count <- index_count + 1
-    feature_df <- filter(maven_output_df, groupId == groupId_val, sample %in% samples_list)
+    feature_df <- dplyr::filter(maven_output_df, groupId == groupId_val, sample %in% samples_list)
     compound_val <- as.character(unique(feature_df$compound))
     samples_index_v <- feature_df$Index
     groupIdx_list[[index_count]] <- samples_index_v
