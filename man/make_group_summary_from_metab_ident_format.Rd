@@ -13,7 +13,7 @@ make_group_summary_from_metab_ident_format(metab_identified_df = NULL)
 The group summary format of elmaven
 }
 \description{
-It convert metabolite identification step format to group summary format of elmaven
+It converts metabolites identification step or restructured camera output format to group summary format of elmaven
 }
 \examples{
 make_group_summary_from_metab_ident_format(metab_identified_df)
