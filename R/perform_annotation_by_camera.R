@@ -7,6 +7,7 @@
 #' @param ppm General ppm error
 #' @param mzabs General absolute error in m/z
 #' @param adducts_rules A dataframe with different adducts rules
+#' @param isotope_matrix four column m/z-diff and ratio Matrix, for matching isotopic peaks
 #' @param cor_exp_th Threshold for intensity correlations across samples
 #' @param pval p-value threshold for testing correlation of significance (0-1)
 #' @param perfwhm percentage of FWHM (Full Width at Half Maximum) width used in groupFWHM function for grouping features
@@ -21,10 +22,10 @@
 #' perform_annotation_by_camera(xcms_object, polarity = "positive", ppm = 5, mzabs = 0.01)
 #' @import CAMERA
 #' @export
-perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, ppm = 5, mzabs = 0.01,
-                                         adducts_rules = NULL, cor_exp_th = 0.75, pval = 0.05,
-                                         perfwhm = 0.6, sigma = 6, maxcharge = 3, maxiso = 4, 
-                                         minfrac = 0.5, multiplier = 3, max_peaks = 100){
+perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, ppm = 10, mzabs = 0,
+                                         adducts_rules = NULL, isotope_matrix = NULL, cor_exp_th = 0.75, 
+                                         pval = 0.05, perfwhm = 0.6, sigma = 6, maxcharge = 3, 
+                                         maxiso = 4, minfrac = 0.5, multiplier = 3, max_peaks = 100){
   message("Perform Annotation BY CAMERA Started...")
   require(CAMERA)
   
@@ -61,11 +62,31 @@ perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, pp
     }
   }
   
-  an <- CAMERA::xsAnnotate(xcms_object)
+  if (identical(isotope_matrix, NULL)){  
+    isotope_matrix <- PollyMetaboR::isotope_matrix
+    C13_mass = 13.0033548378
+    C12_mass = 12.00000000   
+    C_isotopic_mz <- C13_mass - C12_mass
+    C_isotopic_mz_delta <- PollyMetaboR::calculate_mz_delta(mz_source = C_isotopic_mz, mz_tolerence_unit = "ppm", mz_tolerence = ppm)
+    isotope_matrix[, "mzmin"] <- round(C_isotopic_mz - (mzabs + C_isotopic_mz_delta), 6)
+    isotope_matrix[, "mzmax"] <- round(C_isotopic_mz + (mzabs + C_isotopic_mz_delta), 6)    
+  } else {
+    if (!identical(as.character(class(isotope_matrix)), "matrix")){
+      warning("The isotope_matrix parameter is not a matrix")
+      return (NULL) 
+    }
+    
+    if (!all(c("mzmin", "mzmax", "intmin", "intmax") %in% colnames(isotope_matrix))){
+      warning("The isotope_matrix should have the following columns : mzmin, mzmax, intmin, intmax")
+      return (NULL)        
+    } 
+  }
+  
+  an <- CAMERA::xsAnnotate(xcms_object, polarity = polarity)
   anF <- CAMERA::groupFWHM(an, sigma = sigma, perfwhm = perfwhm, intval = "maxo")
   anIC <- CAMERA::groupCorr(anF, calcCiS = FALSE, calcCaS = TRUE, cor_exp_th = cor_exp_th, pval = pval, intval = "maxo")
-  anI <- CAMERA::findIsotopes(anIC, maxcharge = maxcharge, maxiso = maxiso, ppm = ppm, mzabs = mzabs, intval = "maxo", minfrac = minfrac)
-  anFA <- CAMERA::findAdducts(anI, ppm = ppm, mzabs = mzabs,  multiplier = multiplier, polarity = polarity, rules = adducts_rules, max_peaks = max_peaks, intval = "maxo")
+  anI <- CAMERA::findIsotopes(anIC, maxcharge = maxcharge, maxiso = maxiso, ppm = ppm, mzabs = mzabs, intval = "maxo", minfrac = minfrac, isotopeMatrix = isotope_matrix)
+  anFA <- CAMERA::findAdducts(anI, ppm = ppm, mzabs = mzabs, multiplier = multiplier, polarity = polarity, rules = adducts_rules, max_peaks = max_peaks, intval = "maxo")
   annotated_peaks_df <- PollyMetaboR::get_peak_list(anFA, intval = "maxo")
   
   message("Perform Annotation BY CAMERA Completed...")

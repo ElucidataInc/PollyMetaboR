@@ -7,9 +7,10 @@
 perform_annotation_by_camera(
   xcms_object = NULL,
   polarity = NULL,
-  ppm = 5,
-  mzabs = 0.01,
+  ppm = 10,
+  mzabs = 0,
   adducts_rules = NULL,
+  isotope_matrix = NULL,
   cor_exp_th = 0.75,
   pval = 0.05,
   perfwhm = 0.6,
@@ -31,6 +32,8 @@ perform_annotation_by_camera(
 \item{mzabs}{General absolute error in m/z}
 
 \item{adducts_rules}{A dataframe with different adducts rules}
+
+\item{isotope_matrix}{four column m/z-diff and ratio Matrix, for matching isotopic peaks}
 
 \item{cor_exp_th}{Threshold for intensity correlations across samples}
 
