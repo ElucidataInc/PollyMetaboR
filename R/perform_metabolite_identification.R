@@ -252,7 +252,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   }
   
   if (class(mz_data)=='numeric'){
-    mz_data <- data.frame(mz_index = 1: length(mz_data), mz_colname = mz_data)
+    mz_data <- data.frame(mz_index = 1:length(mz_data), mz_colname = mz_data)
     mz_data <- setnames(mz_data, "mz_colname", mz_colname)
   }
   
