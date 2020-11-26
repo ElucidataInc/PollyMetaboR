@@ -1,6 +1,6 @@
 #' make_valid_elmaven_samplenames_by_makenames
 #'
-#' It returns a dataframe with only representative features from each feature groups.
+#' It makes valid samplenames in elmaven file using make names.
 #'
 #' @param maven_output_df The peak detailed format of elmaven
 #' @param metadata_df The sample to cohort mapping file where samples should be present in first column

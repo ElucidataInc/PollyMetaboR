@@ -18,7 +18,7 @@ make_valid_elmaven_samplenames_by_makenames(
 The list of two dataframes with replaced samples names by make.names
 }
 \description{
-It returns a dataframe with only representative features from each feature groups.
+It makes valid samplenames in elmaven file using make names.
 }
 \examples{
 make_valid_elmaven_samplenames_by_makenames(maven_output_df, metadata_df)
