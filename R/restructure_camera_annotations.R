@@ -7,11 +7,12 @@
 #' @return A dataframe with restructure camera output
 #' @examples
 #' restructure_camera_annotations(annotated_peaks_df, polarity = 'positive')
-#' @import dplyr
+#' @import dplyr stringr
 #' @export
 restructure_camera_annotations <- function(annotated_peaks_df = NULL, polarity = 'positive') {
   message("Restructure CAMERA Annotations Started...")
   require(dplyr)
+  require(stringr)
   
   if (identical(annotated_peaks_df, NULL)){
     warning("The annotated_peaks_df is NULL")
@@ -103,7 +104,7 @@ restructure_camera_annotations <- function(annotated_peaks_df = NULL, polarity =
       split_isotopes_str <- function(str_to_split = '', iso_par = ''){
         str_split_vec = vector()
         if (is.na(str_to_split) | (is.nan(str_to_split))) return (str_split_vec)
-        str_split_vec <- str_extract_all(as.character(str_to_split), "\\[(.*?)\\]")[[1]]
+        str_split_vec <- stringr::str_extract_all(as.character(str_to_split), "\\[(.*?)\\]")[[1]]
         str_split_vec <- substring(str_split_vec, 2, nchar(str_split_vec)-1)
         if (iso_par == 'isotope_id'){ return (str_split_vec[1]) }
         else if (iso_par == 'isotope_type'){return (str_split_vec[2])}

@@ -304,7 +304,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   }
   
   ###Split mz data into chunks of 1000 features each###
-  split_mz_data_list <- split(mz_data, (as.numeric(rownames(mz_data))-1) %/% 1000)
+  split_mz_data_list <- split(mz_data, (as.numeric(1:nrow(mz_data))-1) %/% 1000)
   
   ###Run each future run on only specified core (numcores)###
   cores_split_mz_data_list <- split(split_mz_data_list, ((1:length(split_mz_data_list))-1) %/% numcores)
