@@ -189,9 +189,11 @@ calc_mass_from_formula_comp_data <- function(comp_data = NULL){
     get_mass_from_formula <- function(x){
       exact_mass <- as.numeric(x[["mass"]])
       if (is.na(exact_mass)){
-        comp_formula <- stringr::str_trim(as.character(x[["formula"]]))  
-        if (!(comp_formula == "")){
-          try(x[["mass"]] <- as.numeric(Rdisop::getMolecule(formula = comp_formula, maxisotopes = 1)$exactmass), silent = TRUE)
+        comp_formula <- stringr::str_trim(as.character(x[["formula"]]))
+        if (!is.na(comp_formula)){ 
+          if (!(comp_formula == "")){
+            try(x[["mass"]] <- as.numeric(Rdisop::getMolecule(formula = comp_formula, maxisotopes = 1)$exactmass), silent = TRUE)
+          }
         }
       }
       return (x)
