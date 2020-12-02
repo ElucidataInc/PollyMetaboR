@@ -12,8 +12,10 @@ plot_spectrum_similarity(
   mz_range = c(0, 1600),
   interactive = FALSE,
   x_label = "mz",
-  y_label = "intensity",
-  title_label = ""
+  y_label = "intensity(\%)",
+  title_label = "",
+  top_label = "Query Spectra",
+  bottom_label = "Reference Spectra"
 )
 }
 \arguments{
@@ -32,6 +34,10 @@ plot_spectrum_similarity(
 \item{y_label}{Label x-axis}
 
 \item{title_label}{Title of the plot}
+
+\item{top_label}{Specify top label}
+
+\item{bottom_label}{Specify bottom label}
 }
 \value{
 ggplot object or plotly object

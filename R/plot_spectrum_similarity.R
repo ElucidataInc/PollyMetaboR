@@ -11,6 +11,8 @@
 #' @param x_label Label x-axis
 #' @param y_label Label x-axis
 #' @param title_label Title of the plot
+#' @param top_label Specify top label
+#' @param bottom_label Specify bottom label
 #' @return ggplot object or plotly object
 #' @examples
 #' plot_spectrum_similarity <- function (spec_query, spec_ref, mz_tolerence_unit = "ppm", 
@@ -18,7 +20,8 @@
 #' @export
 plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL, mz_tolerence_unit = "ppm", 
                                       mz_tolerence = 20, mz_range = c(0, 1600), interactive = FALSE,
-                                      x_label = "mz", y_label = "intensity", title_label = ""){
+                                      x_label = "mz", y_label = "intensity(%)", title_label = "",
+                                      top_label = "Query Spectra", bottom_label = "Reference Spectra"){
   message("Plot Spectrum Similarity Started...")
   require(plotly)
   require(ggplot2)
@@ -61,6 +64,22 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL, mz_tol
   if (identical(mz_range, NULL)){
     warning("The mz_range is NULL")
     return (NULL)  
+  }
+  
+  if (identical(x_label, NULL)){
+    x_label <- ""
+  }                                              
+  if (identical(y_label, NULL)){
+    y_label <- ""
+  }                                                                                           
+  if (identical(title_label, NULL)){
+    title_label <- ""
+  }                                              
+  if (identical(top_label, NULL)){
+    top_label <- ""
+  }                                             
+  if (identical(bottom_label, NULL)){
+    bottom_label <- ""
   }    
   
   query_tmp <- data.frame(mz = spec_query[, 1], intensity = spec_query[, 2])
@@ -98,12 +117,25 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL, mz_tol
     }
   }
   
-  ref_score$data_type <- paste("data : Reference Spectra", "<br>", "matched type : ", ref_score$matched_type, sep = "")
-  query_score$data_type <- "data : Query Spectra"                                             
+  if (nchar(top_label) > 0){
+    query_score$data_type <- paste("data : ", top_label, sep = "")  
+  } else{
+    query_score$data_type <- ""  
+  }                                            
+  
+  if (nchar(bottom_label) > 0){
+    ref_score$data_type <- paste("data : ", bottom_label, "<br>", "matched_type : ", ref_score$matched_type, sep = "")  
+  } else{
+    ref_score$data_type <- paste("matched_type : ", ref_score$matched_type, sep = "")  
+  }                                               
   
   p <- ggplot() + 
-    geom_bar(data = query_score, aes(x = mz, y = intensity, fill = matched_color, text = data_type, width = 1), stat = "identity", position = "dodge", orientation = "x") +
-    geom_bar(data = ref_score, aes(x = mz, y = intensity, fill = matched_color, text = data_type, width = 1), stat = "identity", position = "dodge",  orientation = "x") +
+    geom_bar(data = query_score, aes(x = mz, y = intensity, fill = matched_color, 
+                                     text = data_type, width = 1), 
+             stat = "identity", position = "dodge", orientation = "x") +
+    geom_bar(data = ref_score, aes(x = mz, y = intensity, fill = matched_color,
+                                   text = data_type, width = 1),
+             stat = "identity", position = "dodge",  orientation = "x") +
     ggtitle(title_label) + 
     labs(x = x_label, y = y_label) +
     geom_hline(yintercept = 0, size = 0.4) +                                    
@@ -120,8 +152,8 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL, mz_tol
           axis.text.y = element_text(colour = "black", size = 10, 
                                      margin = unit(c(0.5, 0.5, 0.1, 0.1), "cm"), face = "plain"),
           axis.ticks.length = unit(-0.25, "cm"), legend.position = "none") +
-    ggplot2::annotate(geom = "text",  x=Inf, y = Inf, label = "Query Spectra", vjust=1, hjust=1) + 
-    ggplot2::annotate(geom = "text",  x= Inf, y = -Inf, label = "Reference Spectra", vjust=-1, hjust=1)
+    ggplot2::annotate(geom = "text",  x=Inf, y = Inf, label = top_label, vjust=1, hjust=1) + 
+    ggplot2::annotate(geom = "text",  x= Inf, y = -Inf, label = bottom_label, vjust=-1, hjust=1)
   
   if (interactive == TRUE){
     p <- ggplotly(p)    
