@@ -20,11 +20,21 @@ calc_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL, mz_tol
     warning("No spec_query was given")
     return (NULL)
   }
+
+  if ((!class(spec_query)=='data.frame') | (!any(c("mz", "intensity") %in% colnames(spec_query)))){
+    warning("Please input valid spec_query (a dataframe containing 'mz' and 'intensity' columns)")
+    return (NULL)
+  }
   
   if(identical(spec_ref, NULL)){
     warning("No spec_ref was given")
     return (NULL)
   }
+
+  if ((!class(spec_ref)=='data.frame') | (!any(c("mz", "intensity") %in% colnames(spec_ref)))){
+    warning("Please input valid spec_ref (a dataframe containing 'mz' and 'intensity' columns)")
+    return (NULL)
+  }    
   
   if (identical(mz_tolerence_unit, NULL)){
     warning("The mz_tolerence_unit is NULL")
