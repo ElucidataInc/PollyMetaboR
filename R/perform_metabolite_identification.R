@@ -84,18 +84,20 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
   
   mzmin <- mz_source - delta
   mzmax <- mz_source + delta
-  comp_data_filter <- dplyr::filter(comp_data, mass >= mzmin & mass <= mzmax)  
+  comp_data_filter <- dplyr::filter(comp_data, mass >= mzmin & mass <= mzmax)
+  
+  if (nrow(comp_data_filter) >=1){
+    comp_data_filter$identification_score <- 1       
+  }   
   
   if ("rt" %in% colnames(comp_data_filter)){
-    
+    comp_data_filter <- comp_data_filter %>% dplyr::rename(rt_db = rt)
     if (!identical(rt_source, NULL) && !identical(rt_tolerence, NULL)){
       message("Matching comp_data with both mz and rt")
-      comp_data_filter <- comp_data_filter %>% dplyr::rename(rt_db = rt)
       
       comp_data_filter$rt_db <- as.numeric(comp_data_filter$rt_db)
       
       rt_bool <- !is.na(comp_data_filter$rt_db)
-      
       comp_data_with_rt <- comp_data_filter[rt_bool, , drop = FALSE]
       rtmin <- rt_source - rt_tolerence
       rtmax <- rt_source + rt_tolerence
@@ -103,6 +105,7 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
       
       if (nrow(comp_data_filter_rt) >= 1){
         comp_data_filter <- comp_data_filter_rt
+        comp_data_filter$identification_score <- 2  
       } else {
         comp_data_filter <- comp_data_filter[!rt_bool, , drop = FALSE]
       } 
