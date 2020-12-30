@@ -87,7 +87,7 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
   comp_data_filter <- dplyr::filter(comp_data, mass >= mzmin & mass <= mzmax)
   
   if (nrow(comp_data_filter) >=1){
-    comp_data_filter$identification_score <- 1       
+    comp_data_filter$identification_type <- "mz"
   }   
   
   if ("rt" %in% colnames(comp_data_filter)){
@@ -105,7 +105,7 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
       
       if (nrow(comp_data_filter_rt) >= 1){
         comp_data_filter <- comp_data_filter_rt
-        comp_data_filter$identification_score <- 2  
+        comp_data_filter$identification_type <- "mz and rt"  
       } else {
         comp_data_filter <- comp_data_filter[!rt_bool, , drop = FALSE]
       } 

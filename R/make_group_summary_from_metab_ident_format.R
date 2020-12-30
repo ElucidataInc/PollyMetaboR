@@ -25,7 +25,7 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
   metab_default_cols  <- c('mz', 'mzmin', 'mzmax', 'rt', 'rtmin', 'rtmax', 'groupId',
                            'identified', 'isotopes', 'adduct', 'pcgroup', 'adduct_type',
                            'basemass', 'isotope_id', 'isotope_type', 'feature_group',
-                           'compound', 'id', 'formula', 'mass', 'rt_db', 'identification_score')
+                           'compound', 'id', 'formula', 'mass', 'rt_db', 'identification_type')
   
   maven_default_cols <- c("label", "metaGroupId", "groupId", "goodPeakCount", "medMz",
                           "medRt", "maxQuality", "adductName", "isotopeLabel", "compound",
@@ -57,9 +57,9 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
     }      
   }
   
-  if ("identification_score" %in% utp_output_cols){
-    maven_default_cols <- c(maven_default_cols, "identification_score")
-    subset_cols <- c(subset_cols, "identification_score")
+  if ("identification_type" %in% utp_output_cols){
+    maven_default_cols <- c(maven_default_cols, "identification_type")
+    subset_cols <- c(subset_cols, "identification_type")
   }
   
   samples_vec <- utp_output_cols[!utp_output_cols %in% metab_default_cols]
