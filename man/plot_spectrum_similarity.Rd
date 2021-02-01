@@ -46,6 +46,5 @@ ggplot object or plotly object
 It plots the query spectra w.r.t the reference spectra
 }
 \examples{
-plot_spectrum_similarity <- function (spec_query, spec_ref, mz_tolerence_unit = "ppm", 
-                                      mz_tolerence = 10, mz_range = c(0, 1600))
+plot_spectrum_similarity(spec_query, spec_ref, mz_tolerence_unit = "ppm", mz_tolerence = 10, mz_range = c(0, 1600))
 }
