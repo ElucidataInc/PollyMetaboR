@@ -71,17 +71,17 @@ plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_labe
     p <- plot_ly(data = intensity_data) 
     
     if (!identical(rt_min, NULL)){
-      p <- p %>% add_segments(x = rt_min, xend = rt_min, y = 0, yend = max(intensity_data$intensity), 
+      p <- p %>% add_segments(x = rt_min, xend = rt_min, y = 0, yend = max(intensity_data$intensity), name = "rt min",
                               line = list(dash = "dash", color ="grey", width = 1), opacity = 0.7, showlegend = F)
     }
     
     if (!identical(rt_max, NULL)){
-      p <- p %>% add_segments(x = rt_max, xend = rt_max, y = 0, yend = max(intensity_data$intensity), 
+      p <- p %>% add_segments(x = rt_max, xend = rt_max, y = 0, yend = max(intensity_data$intensity), name = "rt max",
                               line = list(dash = "dash", color ="grey", width = 1),  opacity = 0.7, showlegend = F) 
     }
     
     p <- p %>% add_trace(x = ~rt, y = ~intensity, color = ~sample, text = ~sample, 
-                         fill= 'tozeroy', type = 'scatter', mode = 'lines') %>%        
+                         hoverinfo = 'x+y+text', fill= 'tozeroy', type = 'scatter', mode = 'lines') %>%        
       layout(title = list(text = title_label, font = list(size = title_label_size), xref = "paper", yref = "paper", x = 0.5), 
              xaxis = list(title = x_label, titlefont = list(size = y_label_size), 
                           autotick = TRUE, ticks = "outside", tick0 = 0, ticklen = 5, showgrid = F, showline = TRUE), 
