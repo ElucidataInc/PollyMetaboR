@@ -86,6 +86,11 @@ plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_na
     return (NULL) 
   }    
   
+  if (all(is.na(peaks$eic_rt)) | all(is.na(peaks$eic_intensity))){
+    warning("The emDB file does not have eic raw data")
+    return (NULL)   
+  }
+  
   samples_df <- DBI::dbReadTable(con_db, "samples")[, c("sample_id", "name")]
   colnames(samples_df) <- c("sample_id", "sample_name")
   peaks <- merge(samples_df, peaks, by = "sample_id")
