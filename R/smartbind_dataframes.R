@@ -7,14 +7,11 @@
 #' @return The combined dataframe
 #' @examples
 #' smartbind_dataframes(df_1, df_2)
-#' @import dplyr gtools
 #' @export
 smartbind_dataframes <- function(df_1 = NULL, df_2 = NULL){
       
   message("Smartbind Dataframe Started...")
-  require(dplyr)
-  require(gtools)
-     
+
   if (identical(df_1, NULL) && identical(df_2, NULL)){
     warning("Both dataframes are NULL\n")
     combined_df <- NULL

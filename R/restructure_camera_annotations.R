@@ -7,12 +7,9 @@
 #' @return A dataframe with restructure camera output
 #' @examples
 #' restructure_camera_annotations(annotated_peaks_df, polarity = 'positive')
-#' @import dplyr stringr
 #' @export
 restructure_camera_annotations <- function(annotated_peaks_df = NULL, polarity = 'positive') {
   message("Restructure CAMERA Annotations Started...")
-  require(dplyr)
-  require(stringr)
   
   if (identical(annotated_peaks_df, NULL)){
     warning("The annotated_peaks_df is NULL")

@@ -17,6 +17,7 @@
 #' @return ggplot object or plotly object
 #' @examples
 #' plot_eic(intensity_data, rt_min, rt_min)
+#' @import dplyr plotly ggplot2
 #' @export
 plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_label = "RT",
                      y_label = "Intensity", title_label = "", legend_label = "Sample",

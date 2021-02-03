@@ -7,12 +7,10 @@
 #' @return The dataframe with only representative features
 #' @examples
 #' get_feature_group_representative(restructured_camera_df, polarity = "positive")
-#' @import dplyr
 #' @export
 get_feature_group_representative <- function(restructured_camera_df = NULL, polarity = "positive"){
   message("Get Feature Group Representative Started...")
-  require(dplyr)
-  
+
   if (identical(restructured_camera_df, NULL)){
     warning("The restructured_camera_df is NULL")
     return (NULL)

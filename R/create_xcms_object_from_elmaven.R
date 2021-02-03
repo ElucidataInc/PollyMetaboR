@@ -7,13 +7,12 @@
 #' @return xcms object
 #' @examples
 #' create_xcms_object_from_elmaven(maven_output_df)
-#' @import xcms dplyr
+#' @import xcms
 #' @export
 create_xcms_object_from_elmaven <- function(maven_output_df = NULL, polarity = NULL){
   message("Create XCMS Object From ElMaven Started...")
   require(xcms)
-  require(dplyr)
-  
+
   if (identical(maven_output_df, NULL)){
     warning("The maven_output_df is NULL")
     return (NULL)

@@ -8,7 +8,6 @@
 #' @return A numeric value of mz delta 
 #' @examples
 #' calculate_mz_delta(mz_source, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20)
-#' @import dplyr
 #' @export
 calculate_mz_delta <- function(mz_source = NULL, mz_tolerence_unit = "ppm", mz_tolerence = 20){
   message("Calculate MZ Delta Started...")
@@ -48,13 +47,11 @@ calculate_mz_delta <- function(mz_source = NULL, mz_tolerence_unit = "ppm", mz_t
 #' @return A dataframe with mapped metabolites 
 #' @examples
 #' mz_search_with_comp_data(mz_source, comp_data, mz_target, mz_tolerence_unit = "ppm", mz_tolerence = 20)
-#' @import dplyr
 #' @export
 mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "ppm", 
                                      mz_tolerence = 20, rt_source = NULL, rt_tolerence = NULL){
   message("MZ Search With Comp Data Started...")
-  require(dplyr)
-  
+
   if (identical(mz_source, NULL)){
     warning("The mz_source is NULL")
     return (NULL)
@@ -91,7 +88,7 @@ mz_search_with_comp_data <- function(mz_source, comp_data, mz_tolerence_unit = "
   }   
   
   if ("rt" %in% colnames(comp_data_filter)){
-    comp_data_filter <- comp_data_filter %>% dplyr::rename(rt_db = rt)
+    comp_data_filter <- dplyr::rename(comp_data_filter, rt_db = rt)
     if (!identical(rt_source, NULL) && !identical(rt_tolerence, NULL)){
       message("Matching comp_data with both mz and rt")
       
@@ -170,7 +167,6 @@ mz_match_check <- function(mz_source = NULL, mz_target = NULL, mz_tolerence_unit
 #' @return The compound database with calculated mass for the compounds
 #' @examples
 #' calc_mass_from_formula_comp_data(comp_data)
-#' @import stringr Rdisop
 #' @export
 calc_mass_from_formula_comp_data <- function(comp_data = NULL){
   message("Calc Mass From Formula Comb Data Started...")
@@ -226,16 +222,12 @@ calc_mass_from_formula_comp_data <- function(comp_data = NULL){
 #' @examples
 #' perform_metabolite_identification(mz_data, comp_data, mz_colname = 'basemass',
 #'                                   mz_tolerence_unit = "ppm", mz_tolerence = 20, rt_tolerence = 0.05)
-#' @import data.table dplyr future
 #' @export
 perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL, 
                                               mz_colname = 'basemass', mz_tolerence_unit = "ppm",
                                               mz_tolerence = 20, rt_tolerence = NULL, numcores = 2){
   message("Perform Metabolite Identification Started...")
-  require(data.table)
-  require(dplyr)
-  require(future)
-  
+
   if(identical(mz_data, NULL)){
     warning("No mz_data was given")
     return (NULL)

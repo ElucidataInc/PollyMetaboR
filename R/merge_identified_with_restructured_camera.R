@@ -7,12 +7,10 @@
 #' @return The dataframe with merged identified and restructured camera data
 #' @examples
 #' merge_identified_with_restructured_camera(metab_identified_df, restructured_camera_df)
-#' @import dplyr
 #' @export
 merge_identified_with_restructured_camera <- function(metab_identified_df = NULL, restructured_camera_df = NULL) {
   message("Merge Identified With Restructured Camera Started...")
-  require(dplyr)
-  
+
   if (identical(metab_identified_df, NULL)){
     warning("The metab_identified_df is NULL")
     return (NULL)

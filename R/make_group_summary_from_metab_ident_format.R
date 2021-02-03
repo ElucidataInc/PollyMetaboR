@@ -6,12 +6,10 @@
 #' @return The group summary format of elmaven
 #' @examples
 #' make_group_summary_from_metab_ident_format(metab_identified_df)
-#' @import dplyr
 #' @export
 make_group_summary_from_metab_ident_format <- function(metab_identified_df = NULL){
   message("Make Group Summary From Metab Ident Format Started...")
-  require(dplyr)
-  
+
   if (identical(metab_identified_df, NULL)){
     warning("The metab_identified_df is NULL")
     return (NULL)

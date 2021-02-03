@@ -16,6 +16,7 @@
 #' @return ggplot object or plotly object
 #' @examples
 #' plot_spectrum_similarity(spec_query, spec_ref, mz_tolerence_unit = "ppm", mz_tolerence = 10, mz_range = c(0, 1600))
+#' @import plotly ggplot2
 #' @export
 plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL, mz_tolerence_unit = "ppm", 
                                       mz_tolerence = 20, mz_range = c(0, 1600), interactive = FALSE,

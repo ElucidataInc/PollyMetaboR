@@ -23,10 +23,7 @@ plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_na
                                legend_label = "Sample", x_label_size = 15, y_label_size = 15, 
                                title_label_size = 15, legend_label_size = 15, interactive = T){
   message("Plot EIC From EMDB Started...")
-  require(DBI)
-  require(RSQLite)
-  require(stringr)
-  
+
   if (identical(emdb_path, NULL)){
     warning("The emdb_path is NULL")
     return (NULL)

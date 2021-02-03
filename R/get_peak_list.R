@@ -8,11 +8,14 @@
 #' @return The dataframe of grouped peaktable
 #' @examples
 #' getPeaklist(object, intval="maxo")
-#' @import CAMERA
 #' @export
-setGeneric("get_peak_list", function(object, intval="maxo") standardGeneric("get_peak_list"))
-setMethod("get_peak_list", "xsAnnotate", function(object, intval="maxo") {
+get_peak_list <- function(object, intval="maxo") {
   message("Get Peak List Started...")
+  
+  if (!identical(as.character(class(object)), "xsAnnotate")){
+    warning(" The object is not the xsAnnotate object")
+    return (NULL)  
+  }
   
   if (! intval %in% colnames(peaks(object@xcmsSet))) {
     stop("unknown intensity value!")
@@ -111,4 +114,4 @@ setMethod("get_peak_list", "xsAnnotate", function(object, intval="maxo") {
   message("Get Peak List Completed...")
   
   return(invisible(data.frame(peaktable, isotopes, adduct, pcgroup, stringsAsFactors = FALSE, check.names = FALSE, row.names = NULL)));
-})
+}
