@@ -47,7 +47,7 @@ plot_hist_elements_frequency <- function(elements_vec = NULL, frequency_type = "
     frequency_df$Element <- factor(frequency_df$Element, levels = as.character(sort(unique(frequency_df$Element))))    
     p <- plot_ly(x = frequency_df$Freq, y = frequency_df$Element, type = "bar", orientation = 'h',
                  marker = list(line = list(color = 'black', width = 1.5)))  %>% 
-      layout(title = plot_title, yaxis = list(title = yaxis_title), xaxis = list(title = xaxis_title), barmode = 'group')
+      layout(title = plot_title, yaxis = list(title = yaxis_title), xaxis = list(title = xaxis_title))
   }
   
   message("Plot Histogram Elements Frequency Completed...")
