@@ -35,19 +35,19 @@ plot_hist_elements_frequency <- function(elements_vec = NULL, frequency_type = "
     return (NULL)  
   } 
   
-  frequency_df <- data.frame(table(Element = elements_vec))
-  
+  frequency_df <- data.frame(table(Element = elements_vec))  
   if (frequency_type %in% "by_occurrence"){
-    
-    p <- plot_ly(x = as.character(frequency_df$Freq), type = "histogram", 
+    frequency_df$Freq <- factor(frequency_df$Freq, levels = as.character(sort(unique(frequency_df$Freq))))
+    p <- plot_ly(x = frequency_df$Freq, type = "histogram", 
                  marker = list(line = list(color = 'black', width = 0.5)))  %>% 
       layout(title = plot_title, yaxis = list(title = yaxis_title), xaxis = list(title = xaxis_title))
   }
   
-  if (frequency_type %in% "by_elements"){ 
-    p <- plot_ly(x = frequency_df$Freq, y = frequency_df$Element, type = "bar", 
+  if (frequency_type %in% "by_elements"){
+    frequency_df$Element <- factor(frequency_df$Element, levels = as.character(sort(unique(frequency_df$Element))))    
+    p <- plot_ly(x = frequency_df$Freq, y = frequency_df$Element, type = "bar", orientation = 'h',
                  marker = list(line = list(color = 'black', width = 1.5)))  %>% 
-      layout(title = plot_title, yaxis = list(title = yaxis_title), xaxis = list(title = xaxis_title))
+      layout(title = plot_title, yaxis = list(title = yaxis_title), xaxis = list(title = xaxis_title), barmode = 'group')
   }
   
   message("Plot Histogram Elements Frequency Completed...")
