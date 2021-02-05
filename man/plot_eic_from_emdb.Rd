@@ -51,5 +51,5 @@ ggplot object or plotly object
 It plots the extracted ion chromatogram (EIC) for specific groupid from emdb.
 }
 \examples{
-plot_eic_from_emdb <- function(emdb_path, table_group_id, table_name)
+plot_eic_from_emdb(emdb_path, table_group_id, table_name)
 }

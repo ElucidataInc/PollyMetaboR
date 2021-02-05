@@ -16,7 +16,7 @@
 #' @param interactive Make plot interactive using plotly
 #' @return ggplot object or plotly object
 #' @examples
-#' plot_eic_from_emdb <- function(emdb_path, table_group_id, table_name)
+#' plot_eic_from_emdb(emdb_path, table_group_id, table_name)
 #' @export
 plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_name = NULL, 
                                x_label = "RT", y_label = "Intensity", title_label = "", 
