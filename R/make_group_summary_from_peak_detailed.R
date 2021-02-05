@@ -10,7 +10,6 @@
 make_group_summary_from_peak_detailed <- function(maven_output_df = NULL, quant_type = "peakAreaCorrected"){
   
   message("Make Group Summary From Peak Detailed Started...")
-  require(dplyr)
   
   if (identical(maven_output_df, NULL)){
     warning("maven_output_df is NULL dataframe")
@@ -22,38 +21,56 @@ make_group_summary_from_peak_detailed <- function(maven_output_df = NULL, quant_
     return (NULL)
   }
   
+  required_cols <- c("groupId", "compound", "compoundId", "formula", "sample", "adductName", "peakMz", 
+                     "mzmin", "mzmax", "rt", "rtmin", "rtmax", "quality", "peakIntensity", "peakArea", 
+                     "peakSplineArea", "peakAreaTop", "peakAreaCorrected", "peakAreaTopCorrected", 
+                     "noNoiseObs", "signalBaseLineRatio", "fromBlankSample")
+  
+  diff_cols <- setdiff(required_cols, colnames(maven_output_df))
+  if (length(diff_cols) > 0){
+    warning(paste("The following columns are missing from maven_output_df :", paste(diff_cols, collapse = ", "), sep = " "))
+    return (NULL)
+  }   
+  
   if (!(quant_type %in% colnames(maven_output_df))){
     warning(c("The ", quant_type, " is not present in maven_output_df column"))
     return (NULL)
-  }
+  }    
   
-  group_summary_df <- data.frame(check.names = FALSE, stringsAsFactors = FALSE)
-  for (groupId_val in unique(maven_output_df$groupId)){
-    feature_df <- dplyr::filter(maven_output_df, groupId == groupId_val)
-    compound <- as.character(unique(feature_df$compound))
-    compoundId <- as.character(unique(feature_df$compoundId))
-    formula <- as.character(unique(feature_df$formula))
-    samples_keys <- as.character(feature_df$sample)
-    samples_values <- as.numeric(feature_df[[quant_type]])
-    medMz <- mean(feature_df$peakMz)
-    medRt <- round(mean(feature_df$rt),3)
-    default_cols_vec <- c("label" = "", "metaGroupId" = groupId_val, "groupId"= groupId_val, 
-                          "goodPeakCount" = "", "medMz" = medMz, "medRt" = medRt, 
-                          "maxQuality" = "", "adductName" = "", "isotopeLabel" = "", 
-                          "compound" = compound, "compoundId" = compoundId, 
-                          "formula" = formula, "expectedRtDiff" = "", "ppmDiff" = "",
-                          "parent" = "")
-    samples_vec <- samples_values
-    names(samples_vec) <- make.unique(samples_keys)
-    group_summary_cols <- c(default_cols_vec, samples_vec)
-    interm_df <- as.data.frame(matrix(,ncol=length(group_summary_cols), nrow=0))
-    names(interm_df)<-names(group_summary_cols)
-    interm_df[1,names(group_summary_cols)] <- group_summary_cols
-    group_summary_df <- dplyr::bind_rows(group_summary_df, interm_df)
-  }
+  default_cols_vec <- c("label", "metaGroupId", "groupId", "goodPeakCount", "medMz", "medRt", 
+                        "maxQuality", "adductName", "isotopeLabel", "compound", "compoundId", 
+                        "formula", "expectedRtDiff", "ppmDiff", "parent")
   
-  numeric_cols <- c("metaGroupId", "groupId", "medMz", "medRt", as.character(unique(maven_output_df$sample)))
-  group_summary_df[numeric_cols] <- sapply(group_summary_df[numeric_cols],as.numeric)
+  empty_cols_vec <- c("label", "goodPeakCount", "maxQuality", "adductName", "isotopeLabel", 
+                      "expectedRtDiff", "ppmDiff", "parent")
+  
+  
+  
+  summarize_fun_list <- list(compound = ~unique(compound)[[1]], compoundId = ~unique(compoundId)[[1]], 
+                             formula = ~unique(formula)[[1]], medMz = ~round(mean(peakMz), 6), 
+                             medRt = ~round(mean(rt), 6))
+  
+  peakml_cols <- c('peakML_label', 'peakML_probability')  
+  if (all(peakml_cols %in% colnames(maven_output_df))){
+    default_cols_vec <- c(default_cols_vec, peakml_cols)
+    summarize_fun_list <- c(summarize_fun_list, list(peakML_label = ~unique(peakML_label)[[1]], 
+                                                     peakML_probability = ~unique(peakML_probability)[[1]]))
+  }    
+  
+  samples_vec <-  unique(maven_output_df[, "sample"])  
+  summarize_peak_detailed <- dplyr::summarize_at(dplyr::group_by_at(maven_output_df, "groupId"), "sample", 
+                                                 summarize_fun_list)    
+  
+  interm_empty_df <- data.frame(matrix(ncol = length(empty_cols_vec), nrow = 1), stringsAsFactors = FALSE, check.names = FALSE)
+  interm_empty_df[1, ] <- ""
+  colnames(interm_empty_df) <- empty_cols_vec    
+  
+  summarize_peak_detailed <- data.frame(summarize_peak_detailed, metaGroupId = summarize_peak_detailed$groupId, 
+                                        interm_empty_df, stringsAsFactors = FALSE, check.names = FALSE)
+  peaks_to_wide_df <- reshape::cast(maven_output_df, groupId ~ sample, value = quant_type, fill = 0)
+  
+  group_summary_df <- merge(summarize_peak_detailed, peaks_to_wide_df, by = "groupId")
+  group_summary_df <- group_summary_df[, c(default_cols_vec, samples_vec)]    
   
   message("Make Group Summary From Peak Detailed Completed...")
   

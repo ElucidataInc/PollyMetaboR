@@ -4,7 +4,7 @@
 #'
 #' @param emdb_path The path to emDB file
 #' @param table_name The peak table name where desired metabolite is present
-#' @return ggplot object or plotly object
+#' @return A dataframe of peak detailed elmaven format
 #' @examples
 #' get_peak_detailed_from_emdb(emdb_path, table_name)
 #' @export

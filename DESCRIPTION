@@ -1,7 +1,7 @@
 Package: PollyMetaboR
 Type: Package
 Title: PAckage specific to metabolomics
-Version: 0.3.2
+Version: 0.3.3
 Author: Sunil Dhakad
 Maintainer: The package maintainer <sunil.dhakad@elucidata.io>
 Description: This package contains functions used in metabolomics.
@@ -19,7 +19,8 @@ Imports:
     gtools(>= 3.8.1),
     Rdisop(>= 1.46.0),
     DBI(>= 1.1.0),
-    RSQLite(>= 2.1.4)
+    RSQLite(>= 2.1.4),
+    reshape(>= 0.8.8)
 Suggests:
     testthat,
     devtools,

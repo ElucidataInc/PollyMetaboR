@@ -12,7 +12,7 @@ get_peak_detailed_from_emdb(emdb_path, table_name)
 \item{table_name}{The peak table name where desired metabolite is present}
 }
 \value{
-ggplot object or plotly object
+A dataframe of peak detailed elmaven format
 }
 \description{
 It extracts the peak detailed format of elmaven from emdb.
