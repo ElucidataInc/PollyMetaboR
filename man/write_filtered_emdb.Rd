@@ -6,17 +6,17 @@
 \usage{
 write_filtered_emdb(
   emdb_path = NULL,
-  table_name = NULL,
   filtered_groups_df = NULL,
+  table_name = NULL,
   save_path = NULL
 )
 }
 \arguments{
 \item{emdb_path}{The path to emDB file}
 
-\item{table_name}{The peak table name where desired metabolite is present}
-
 \item{filtered_groups_df}{A dataframe with filtered groupids}
+
+\item{table_name}{The peak table name where desired metabolite is present}
 
 \item{save_path}{The path to saved filtered emDB file}
 }

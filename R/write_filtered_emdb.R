@@ -3,15 +3,15 @@
 #' It filters the emDB by groupIds and saves in new emDB file.
 #'
 #' @param emdb_path The path to emDB file
-#' @param table_name The peak table name where desired metabolite is present
 #' @param filtered_groups_df A dataframe with filtered groupids
+#' @param table_name The peak table name where desired metabolite is present
 #' @param save_path The path to saved filtered emDB file
 #' @return A file is saved at save_path
 #' @examples
 #' get_peak_detailed_from_emdb(emdb_path, filtered_groups_df, table_name)
 #' @export
-write_filtered_emdb <- function(emdb_path = NULL, table_name = NULL, 
-                                filtered_groups_df = NULL, save_path = NULL){
+write_filtered_emdb <- function(emdb_path = NULL, filtered_groups_df = NULL, 
+                                table_name = NULL, save_path = NULL){
   message("Write Filtered EMDB Started...")
   
   if (identical(emdb_path, NULL)){
@@ -59,7 +59,8 @@ write_filtered_emdb <- function(emdb_path = NULL, table_name = NULL,
   peaktables_vec <- DBI::dbFetch(peaktables_db)[, 1]
   DBI::dbClearResult(peaktables_db)  
   if (!(table_name %in% peaktables_vec)){
-    warning(paste("The", sQuote(table_name), "is not a valid peak table name", sep = " "))
+    warning(paste0("The ", sQuote(table_name), " is not a valid peak table name, please select from ", "(",
+                   paste0(sQuote(peaktables_vec), collapse = ", "), ")"))
     return (NULL)       
   }
   

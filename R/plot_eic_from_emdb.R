@@ -48,9 +48,9 @@ plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_na
   peaktables_db <- DBI::dbSendQuery(con_db, "SELECT DISTINCT table_name FROM peakgroups")
   peaktables_vec <- DBI::dbFetch(peaktables_db)[, 1]
   DBI::dbClearResult(peaktables_db)
-  
   if (!(table_name %in% peaktables_vec)){
-    warning(paste("The", sQuote(table_name), "is not a valid peak table name", sep = " "))
+    warning(paste0("The ", sQuote(table_name), " is not a valid peak table name, please select from ", "(",
+                   paste0(sQuote(peaktables_vec), collapse = ", "), ")"))
     return (NULL)       
   }
   

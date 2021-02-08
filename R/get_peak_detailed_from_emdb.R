@@ -31,12 +31,12 @@ get_peak_detailed_from_emdb <- function(emdb_path, table_name) {
   peaktables_db <- DBI::dbSendQuery(con_db, "SELECT DISTINCT table_name FROM peakgroups")
   peaktables_vec <- DBI::dbFetch(peaktables_db)[, 1]
   DBI::dbClearResult(peaktables_db)
-  
   if (!(table_name %in% peaktables_vec)){
-    warning(paste("The", table_name, "is not a valid peak table name", sep = " "))
+    warning(paste0("The ", sQuote(table_name), " is not a valid peak table name, please select from ", "(",
+                   paste0(sQuote(peaktables_vec), collapse = ", "), ")"))
     return (NULL)       
   }
-  
+
   peakgroups_required_cols <- c('group_id', 'table_group_id')
   
   peaks_required_cols <- c('group_id', 'sample_id', 'peak_mz', 'mzmin', 'mzmax', 'rt', 'rtmin', 'rtmax', 'quality',
