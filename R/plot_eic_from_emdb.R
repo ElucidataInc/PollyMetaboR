@@ -44,6 +44,11 @@ plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_na
     return (NULL)
   }
   
+  if (!identical(tools::file_ext(emdb_path), "emDB")){
+    warning(paste("The", sQuote(emdb_path), "does not end with '.emDB'", sep = " "))
+    return (NULL)      
+  }  
+  
   con_db <- DBI::dbConnect(RSQLite::SQLite(), dbname = emdb_path)
   peaktables_db <- DBI::dbSendQuery(con_db, "SELECT DISTINCT table_name FROM peakgroups")
   peaktables_vec <- DBI::dbFetch(peaktables_db)[, 1]

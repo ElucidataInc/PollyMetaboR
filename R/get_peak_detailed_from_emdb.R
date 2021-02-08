@@ -26,6 +26,11 @@ get_peak_detailed_from_emdb <- function(emdb_path, table_name) {
     return (NULL)
   }
   
+  if (!identical(tools::file_ext(emdb_path), "emDB")){
+    warning(paste("The", sQuote(emdb_path), "does not end with '.emDB'", sep = " "))
+    return (NULL)      
+  }
+  
   con_db <- DBI::dbConnect(RSQLite::SQLite(), emdb_path)
   
   peaktables_db <- DBI::dbSendQuery(con_db, "SELECT DISTINCT table_name FROM peakgroups")
