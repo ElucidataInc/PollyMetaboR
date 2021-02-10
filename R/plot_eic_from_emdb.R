@@ -13,6 +13,9 @@
 #' @param y_label_size Text size of y label
 #' @param title_label_size Text size of text label
 #' @param legend_label_size Text size of legend label
+#' @param x_text_size Text size of x ticks
+#' @param y_text_size Text size of y ticks
+#' @param legend_text_size Text size of legends
 #' @param interactive Make plot interactive using plotly
 #' @return ggplot object or plotly object
 #' @examples
@@ -20,8 +23,9 @@
 #' @export
 plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_name = NULL, 
                                x_label = "RT", y_label = "Intensity", title_label = "", 
-                               legend_label = "Sample", x_label_size = 15, y_label_size = 15, 
-                               title_label_size = 15, legend_label_size = 15, interactive = T){
+                               legend_label = "Sample", x_label_size = 16, y_label_size = 16, 
+                               title_label_size = 16, legend_label_size = 16, x_text_size = 14,
+                               y_text_size = 14, legend_text_size = 14, interactive = T){
   message("Plot EIC From EMDB Started...")
 
   if (identical(emdb_path, NULL)){
@@ -123,9 +127,12 @@ plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_na
     }         
   }
   
-  p <- PollyMetaboR::plot_eic(intensity_data, rt_min = rtmin, rt_max = rtmax, x_label = x_label, y_label = y_label, title_label = title_label, 
-                              legend_label = legend_label, x_label_size = x_label_size, y_label_size = y_label_size, 
-                              title_label_size = title_label_size, legend_label_size = legend_label_size, interactive = interactive)
+  p <- PollyMetaboR::plot_eic(intensity_data, rt_min = rtmin, rt_max = rtmax, x_label = x_label,
+                              y_label = y_label, title_label = title_label, legend_label = legend_label,
+                              x_label_size = x_label_size, y_label_size = y_label_size, 
+                              title_label_size = title_label_size, legend_label_size = legend_label_size,
+                              x_text_size = x_text_size, y_text_size = y_text_size, legend_text_size = legend_text_size,
+                              interactive = interactive)
   
   message("Plot EIC From EMDB Completed...")
   

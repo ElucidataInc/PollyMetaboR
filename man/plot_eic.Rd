@@ -12,10 +12,13 @@ plot_eic(
   y_label = "Intensity",
   title_label = "",
   legend_label = "Sample",
-  x_label_size = 15,
-  y_label_size = 15,
-  title_label_size = 20,
-  legend_label_size = 15,
+  x_label_size = 16,
+  y_label_size = 16,
+  title_label_size = 16,
+  legend_label_size = 16,
+  x_text_size = 14,
+  y_text_size = 14,
+  legend_text_size = 14,
   interactive = TRUE
 )
 }
@@ -41,6 +44,12 @@ plot_eic(
 \item{title_label_size}{Text size of text label}
 
 \item{legend_label_size}{Text size of legend label}
+
+\item{x_text_size}{Text size of x ticks}
+
+\item{y_text_size}{Text size of y ticks}
+
+\item{legend_text_size}{Text size of legends}
 
 \item{interactive}{Make plot interactive using plotly}
 }

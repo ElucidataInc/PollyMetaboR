@@ -13,6 +13,9 @@
 #' @param y_label_size Text size of y label
 #' @param title_label_size Text size of text label
 #' @param legend_label_size Text size of legend label
+#' @param x_text_size Text size of x ticks
+#' @param y_text_size Text size of y ticks
+#' @param legend_text_size Text size of legends
 #' @param interactive Make plot interactive using plotly
 #' @return ggplot object or plotly object
 #' @examples
@@ -21,8 +24,9 @@
 #' @export
 plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_label = "RT",
                      y_label = "Intensity", title_label = "", legend_label = "Sample",
-                     x_label_size = 15, y_label_size = 15, title_label_size = 20, 
-                     legend_label_size = 15, interactive = TRUE){
+                     x_label_size = 16, y_label_size = 16, title_label_size = 16, 
+                     legend_label_size = 16, x_text_size = 14, y_text_size = 14, 
+                     legend_text_size = 14, interactive = TRUE){
   message("Plot EIC Started...")
   require(dplyr)
   require(plotly)
@@ -67,28 +71,39 @@ plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_labe
   sample_with_intmax_df <- intensity_data %>% dplyr::group_by(sample) %>% dplyr::summarise(int_max = max(intensity))
   ordered_samples <- sample_with_intmax_df[with(sample_with_intmax_df, order(-int_max)), ]$sample
   intensity_data$sample <- factor(intensity_data$sample, levels = ordered_samples)
-  
+  sample_by_maxint <- intensity_data %>% dplyr::filter(rt >= rt_min, rt <= rt_max) %>% group_by(sample) %>% dplyr::slice(which.max(intensity))  
+
   if (interactive == TRUE){
-    p <- plot_ly(data = intensity_data) 
+    p <- plot_ly() 
     
     if (!identical(rt_min, NULL)){
       p <- p %>% add_segments(x = rt_min, xend = rt_min, y = 0, yend = max(intensity_data$intensity), name = "rt min",
-                              line = list(dash = "dash", color ="grey", width = 1), opacity = 0.7, showlegend = F)
+                              line = list(dash = "dash", color ="grey", width = 1), opacity = 0.8, showlegend = F)
     }
     
     if (!identical(rt_max, NULL)){
       p <- p %>% add_segments(x = rt_max, xend = rt_max, y = 0, yend = max(intensity_data$intensity), name = "rt max",
-                              line = list(dash = "dash", color ="grey", width = 1),  opacity = 0.7, showlegend = F) 
+                              line = list(dash = "dash", color ="grey", width = 1),  opacity = 0.8, showlegend = F) 
     }
     
-    p <- p %>% add_trace(x = ~rt, y = ~intensity, color = ~sample, text = ~sample, 
-                         hoverinfo = 'x+y+text', fill= 'tozeroy', type = 'scatter', mode = 'lines') %>%        
+    for (sample_n in levels(intensity_data$sample)){
+      eic_data <- dplyr::filter(intensity_data, sample %in% sample_n)
+      maxint_data <- dplyr::filter(sample_by_maxint, sample %in% sample_n)
+      p <- p %>% add_trace(x = eic_data$rt, y = eic_data$intensity, color = sample_n, text = sample_n, 
+                           hoverinfo = 'x+y+text', fill= 'tozeroy', type = 'scatter', mode = 'lines', 
+                           legendgroup = sample_n)
+      p <- p %>% add_trace(x = maxint_data$rt, y = maxint_data$intensity, color = sample_n, text = sample_n, 
+                           hoverinfo = 'x+y+text', type = 'scatter', mode = 'markers', marker = list(size = 18, opacity = 1), 
+                           legendgroup = sample_n, showlegend = F)
+    }  
+    
+    p <- p %>% 
       layout(title = list(text = title_label, font = list(size = title_label_size), xref = "paper", yref = "paper", x = 0.5), 
-             xaxis = list(title = x_label, titlefont = list(size = y_label_size), 
+             xaxis = list(title = x_label, titlefont = list(size = y_label_size), tickfont = list(size = x_text_size), 
                           autotick = TRUE, ticks = "outside", tick0 = 0, ticklen = 5, showgrid = F, showline = TRUE), 
-             yaxis = list(title = y_label, titlefont = list(size = x_label_size), rangemode = "tozero",
+             yaxis = list(title = y_label, titlefont = list(size = x_label_size), tickfont = list(size = y_text_size), rangemode = "tozero",
                           autotick = TRUE, ticks = "outside", tick0 = 0, ticklen = 5, showgrid = F, showline = TRUE),
-             legend = list(font = list(size = 11)), showlegend = T, 
+             legend = list(font = list(size = legend_text_size), tracegroupgap = 1), showlegend = T, 
              margin = list(t = 100)) %>% 
       add_annotations(text = legend_label, xref = "paper", yref = "paper",
                       x=1.04, xanchor="left",
@@ -105,8 +120,11 @@ plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_labe
       geom_area(alpha = 0.5) +
       geom_vline(xintercept = rt_min, size = 0.3, linetype = 'dashed') +
       geom_vline(xintercept = rt_max, size = 0.3, linetype = 'dashed') +
+      
+      geom_point(data = sample_by_maxint, aes(rt, intensity, color = sample, fill = sample), size = 7) +
+      
       scale_x_continuous(expand = c(0, 0)) +
-      scale_y_continuous(expand = c(0, 0)) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, max(intensity_data$intensity) + 0.03* max(intensity_data$intensity))) +
       labs(title = title_label, x = x_label, y = y_label, color = legend_label, fill = legend_label) + # x and y axis labels
       #ggsci::scale_color_aaas() + # filling the point colors
       theme(legend.position = "right", legend.direction = "vertical", # legend positioned at the bottom, horizantal direction,
@@ -117,9 +135,9 @@ plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_labe
             plot.title = element_text(colour = "black", size = title_label_size, face = "bold", hjust = 0.5),
             axis.title.x = element_text(colour ="black", size = x_label_size, face = "bold"), # axis title
             axis.title.y = element_text(colour = "black", size = y_label_size, face = "bold"), # axis title   
-            axis.text.x = element_text(colour = "black", size = 10, margin=unit(c(0.5,0.5,0.1,0.1), "cm"), face = "bold"), # x-axis text in fontsize 10
-            axis.text.y = element_text(colour = "black", size = 10, margin=unit(c(0.5,0.5,0.1,0.1), "cm"), face = "bold"), # y-axis text in fontsize 10
-            legend.text = element_text(size = 10, face = "bold"),
+            axis.text.x = element_text(colour = "black", size = x_text_size, margin=unit(c(0.5,0.5,0.1,0.1), "cm"), face = "bold"), # x-axis text in fontsize 10
+            axis.text.y = element_text(colour = "black", size = y_text_size, margin=unit(c(0.5,0.5,0.1,0.1), "cm"), face = "bold"), # y-axis text in fontsize 10
+            legend.text = element_text(size = legend_text_size, face = "bold"),
             legend.title = element_text(colour = "black", size = title_label_size, face = "bold"),
             axis.ticks.length = unit(0.25, "cm")) # ticks facing inward with 0.25cm length
   }
