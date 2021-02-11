@@ -8,6 +8,7 @@ plot_eic(
   intensity_data = NULL,
   rt_min = NULL,
   rt_max = NULL,
+  set_rt_range = NULL,
   x_label = "RT",
   y_label = "Intensity",
   title_label = "",
@@ -28,6 +29,8 @@ plot_eic(
 \item{rt_min}{Make dashed line at rt_min value}
 
 \item{rt_max}{Make dashed line at rt_max value}
+
+\item{set_rt_range}{Set rt range to plot sliced eic}
 
 \item{x_label}{Label x-axis}
 

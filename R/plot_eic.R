@@ -5,6 +5,7 @@
 #' @param intensity_data The intensity data with sample, intensity and rt columns
 #' @param rt_min Make dashed line at rt_min value
 #' @param rt_max Make dashed line at rt_max value
+#' @param set_rt_range Set rt range to plot sliced eic
 #' @param x_label Label x-axis
 #' @param y_label Label x-axis
 #' @param title_label Title of the plot
@@ -22,8 +23,8 @@
 #' plot_eic(intensity_data, rt_min, rt_min)
 #' @import dplyr plotly ggplot2
 #' @export
-plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_label = "RT",
-                     y_label = "Intensity", title_label = "", legend_label = "Sample",
+plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, set_rt_range = NULL,
+                     x_label = "RT", y_label = "Intensity", title_label = "", legend_label = "Sample",
                      x_label_size = 16, y_label_size = 16, title_label_size = 16, 
                      legend_label_size = 16, x_text_size = 14, y_text_size = 14, 
                      legend_text_size = 14, interactive = TRUE){
@@ -65,14 +66,48 @@ plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_labe
   
   if (identical(title_label, NULL)){ title_label <- "" }
   
-  if (identical(legend_label, NULL)){ legend_label <- "" } 
+  if (identical(legend_label, NULL)){ legend_label <- "" }
+  
+  if (!identical(set_rt_range, NULL)){  
+    set_rt_range <- as.numeric(set_rt_range)
+    if (length(set_rt_range) != 2){
+      warning("The set_rt_range is not a numeric vector of 2 values of rt range, considering all rt values")   
+    }
+    else {  
+      if (any(is.na(set_rt_range))){
+        warning("The set_rt_range is not a numeric vector, considering all rt values")  
+      }
+      else{  
+        intensity_data <- dplyr::filter(intensity_data, rt >= set_rt_range[1], rt <= set_rt_range[2])
+        if (nrow(intensity_data) < 1){
+          warning("The filtered data has 0 rows, please use valid set_rt_range values")
+          return (NULL)  
+        }  
+      }
+    }  
+  }
   
   intensity_data <- intensity_data[with(intensity_data, order(sample, rt, intensity)), ]
   sample_with_intmax_df <- intensity_data %>% dplyr::group_by(sample) %>% dplyr::summarise(int_max = max(intensity))
   ordered_samples <- sample_with_intmax_df[with(sample_with_intmax_df, order(-int_max)), ]$sample
   intensity_data$sample <- factor(intensity_data$sample, levels = ordered_samples)
-  sample_by_maxint <- intensity_data %>% dplyr::filter(rt >= rt_min, rt <= rt_max) %>% group_by(sample) %>% dplyr::slice(which.max(intensity))  
-
+  sample_by_maxint <- data.frame(intensity_data)
+  
+  if (!identical(rt_min, NULL)){
+    sample_by_maxint <- dplyr::filter(sample_by_maxint, rt >= rt_min)
+  }
+  
+  if (!identical(rt_max, NULL)){
+    sample_by_maxint <- dplyr::filter(sample_by_maxint, rt <= rt_max)
+  }    
+  
+  if(nrow(sample_by_maxint) < 1){
+    warning("The rt_min or rt_max or both are out of rt range")
+    return (NULL)
+  }
+  
+  sample_by_maxint <- sample_by_maxint %>% dplyr::group_by(sample) %>% dplyr::slice(which.max(intensity)) 
+  
   if (interactive == TRUE){
     p <- plot_ly() 
     
@@ -116,15 +151,13 @@ plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, x_labe
   }
   else {
     p <- ggplot(intensity_data, aes(rt, intensity, color = sample, fill = sample)) +
-      theme_linedraw() +
-      geom_area(alpha = 0.5) +
+      geom_line() +
+      geom_area(position = 'identity', alpha = 0.5) +
       geom_vline(xintercept = rt_min, size = 0.3, linetype = 'dashed') +
       geom_vline(xintercept = rt_max, size = 0.3, linetype = 'dashed') +
-      
       geom_point(data = sample_by_maxint, aes(rt, intensity, color = sample, fill = sample), size = 7) +
-      
       scale_x_continuous(expand = c(0, 0)) +
-      scale_y_continuous(expand = c(0, 0), limits = c(0, max(intensity_data$intensity) + 0.03* max(intensity_data$intensity))) +
+      scale_y_continuous(expand = c(0, 0), limits = c(0, max(sample_by_maxint$intensity) + 0.03* max(sample_by_maxint$intensity))) +
       labs(title = title_label, x = x_label, y = y_label, color = legend_label, fill = legend_label) + # x and y axis labels
       #ggsci::scale_color_aaas() + # filling the point colors
       theme(legend.position = "right", legend.direction = "vertical", # legend positioned at the bottom, horizantal direction,

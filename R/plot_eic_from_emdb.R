@@ -5,6 +5,7 @@
 #' @param emdb_path The path to emDB file
 #' @param table_group_id The group id of desired metabolite
 #' @param table_name The peak table name where desired metabolite is present
+#' @param set_rt_range Set rt range to plot sliced eic
 #' @param x_label Label x-axis
 #' @param y_label Label x-axis
 #' @param title_label Title of the plot
@@ -21,8 +22,8 @@
 #' @examples
 #' plot_eic_from_emdb(emdb_path, table_group_id, table_name)
 #' @export
-plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_name = NULL, 
-                               x_label = "RT", y_label = "Intensity", title_label = "", 
+plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_name = NULL,
+                               set_rt_range = NULL, x_label = "RT", y_label = "Intensity", title_label = "", 
                                legend_label = "Sample", x_label_size = 16, y_label_size = 16, 
                                title_label_size = 16, legend_label_size = 16, x_text_size = 14,
                                y_text_size = 14, legend_text_size = 14, interactive = T){
@@ -127,7 +128,7 @@ plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_na
     }         
   }
   
-  p <- PollyMetaboR::plot_eic(intensity_data, rt_min = rtmin, rt_max = rtmax, x_label = x_label,
+  p <- PollyMetaboR::plot_eic(intensity_data, rt_min = rtmin, rt_max = rtmax, set_rt_range = set_rt_range, x_label = x_label,
                               y_label = y_label, title_label = title_label, legend_label = legend_label,
                               x_label_size = x_label_size, y_label_size = y_label_size, 
                               title_label_size = title_label_size, legend_label_size = legend_label_size,
