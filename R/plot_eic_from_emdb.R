@@ -5,6 +5,7 @@
 #' @param emdb_path The path to emDB file
 #' @param table_group_id The group id of desired metabolite
 #' @param table_name The peak table name where desired metabolite is present
+#' @param show_sliced_eic If TRUE then use rt range (rtmin-0.1, rtmax+0.1)
 #' @param set_rt_range Set rt range to plot sliced eic
 #' @param x_label Label x-axis
 #' @param y_label Label x-axis
@@ -23,10 +24,11 @@
 #' plot_eic_from_emdb(emdb_path, table_group_id, table_name)
 #' @export
 plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_name = NULL,
-                               set_rt_range = NULL, x_label = "RT", y_label = "Intensity", title_label = "", 
-                               legend_label = "Sample", x_label_size = 16, y_label_size = 16, 
-                               title_label_size = 16, legend_label_size = 16, x_text_size = 14,
-                               y_text_size = 14, legend_text_size = 14, interactive = T){
+                               show_sliced_eic = FALSE, set_rt_range = NULL, x_label = "RT",
+                               y_label = "Intensity", title_label = "", legend_label = "Sample",
+                               x_label_size = 16, y_label_size = 16, title_label_size = 16, 
+                               legend_label_size = 16, x_text_size = 14, y_text_size = 14,
+                               legend_text_size = 14, interactive = T){
   message("Plot EIC From EMDB Started...")
 
   if (identical(emdb_path, NULL)){
@@ -127,6 +129,10 @@ plot_eic_from_emdb <- function(emdb_path = NULL, table_group_id = NULL, table_na
       title_label <- paste(compound_name, mz_at_rt, sep = "\n")
     }         
   }
+
+  if (identical(show_sliced_eic, TRUE) & identical(set_rt_range, NULL)){
+    set_rt_range <- c(rtmin - 0.1, rtmax + 0.1)
+  }  
   
   p <- PollyMetaboR::plot_eic(intensity_data, rt_min = rtmin, rt_max = rtmax, set_rt_range = set_rt_range, x_label = x_label,
                               y_label = y_label, title_label = title_label, legend_label = legend_label,

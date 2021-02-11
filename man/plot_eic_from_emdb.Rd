@@ -8,6 +8,7 @@ plot_eic_from_emdb(
   emdb_path = NULL,
   table_group_id = NULL,
   table_name = NULL,
+  show_sliced_eic = FALSE,
   set_rt_range = NULL,
   x_label = "RT",
   y_label = "Intensity",
@@ -29,6 +30,8 @@ plot_eic_from_emdb(
 \item{table_group_id}{The group id of desired metabolite}
 
 \item{table_name}{The peak table name where desired metabolite is present}
+
+\item{show_sliced_eic}{If TRUE then use rt range (rtmin-0.1, rtmax+0.1)}
 
 \item{set_rt_range}{Set rt range to plot sliced eic}
 
