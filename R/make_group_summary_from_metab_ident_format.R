@@ -9,7 +9,7 @@
 #' @export
 make_group_summary_from_metab_ident_format <- function(metab_identified_df = NULL){
   message("Make Group Summary From Metab Ident Format Started...")
-
+  
   if (identical(metab_identified_df, NULL)){
     warning("The metab_identified_df is NULL")
     return (NULL)
@@ -29,16 +29,16 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
                           "medRt", "maxQuality", "adductName", "isotopeLabel", "compound",
                           "compoundId", "formula", "expectedRtDiff", "ppmDiff", "parent")
   
-  subset_cols <- c("groupId", "mz", "rt", "compound",  "id", "formula", "feature_group",
-                   "adduct_type", "isotope_type", "basemass")    
+  subset_cols <- c("groupId", "mz", "rt", "compound",  "id", "formula",'pcgroup',
+                   "feature_group", 'isotopes', 'adduct', "adduct_type", "isotope_type", "basemass")    
   
   utp_output_cols <- colnames(metab_identified_df)
   if (!all(metab_default_cols %in% utp_output_cols)){
-    if (!all(metab_default_cols[1:16] %in% utp_output_cols)){
+    if (!all(subset_cols[1:3] %in% utp_output_cols)){
       warning(c("The metab_identified_df should have at least the following columns : ",
-                paste0(metab_default_cols[1:16], collapse = ", "),
+                paste0(subset_cols[1:3], collapse = ", "),
                 "\nThe following columns are optional which are from metabolite identification step : ",
-                paste0(metab_default_cols[17:20], collapse = ", ")))
+                paste0(subset_cols[4:length(subset_cols)], collapse = ", ")))
       return (NULL)
     }
     
@@ -52,6 +52,32 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
     
     if (!("formula" %in% utp_output_cols)){
       metab_identified_df$formula <- NA
+    }
+    
+    if (!("feature_group" %in% utp_output_cols)){
+      metab_identified_df$feature_group <- NA
+    }
+    
+    if (!("adduct_type" %in% utp_output_cols)){
+      if ("adduct" %in% utp_output_cols){
+        metab_identified_df$adduct_type <- metab_identified_df$adduct    
+      }
+      else {
+        metab_identified_df$adduct_type <- NA 
+      }  
+    }      
+    
+    if (!("isotope_type" %in% utp_output_cols)){
+      if ("isotopes" %in% utp_output_cols){
+        metab_identified_df$isotope_type <- metab_identified_df$isotopes    
+      }
+      else {
+        metab_identified_df$isotope_type <- NA 
+      }
+    }
+    
+    if (!("basemass" %in% utp_output_cols)){
+      metab_identified_df$basemass <- NA
     }      
   }
   
@@ -70,16 +96,18 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
   maven_output_format$metaGroupId <- maven_output_format$feature_group
   maven_output_format$adductName <- maven_output_format$adduct_type
   maven_output_format$isotopeLabel <- maven_output_format$isotope_type
-  maven_output_format$parent <- maven_output_format$basemass    
+  maven_output_format$parent <- maven_output_format$basemass
   
-  maven_cols_order <- c(maven_default_cols, samples_vec)
+  maven_cols_order <- c(maven_default_cols, samples_vec)    
   maven_output_format <- maven_output_format[, maven_cols_order, drop = FALSE]
   cmpd_nan_bool <- is.na(maven_output_format$compound)
   identified_df <- maven_output_format[!cmpd_nan_bool, , drop = FALSE]
   unidentified_df <- maven_output_format[cmpd_nan_bool, , drop = FALSE]
-  unidentified_df$compound <- paste(unidentified_df$medMz, unidentified_df$medRt, sep = "@")
-  unidentified_df$compoundId <- paste(unidentified_df$medMz, unidentified_df$medRt, sep = "@")
-  unidentified_df$formula <- ""
+  if (nrow(unidentified_df) >= 1){  
+    unidentified_df$compound <- paste(unidentified_df$medMz, unidentified_df$medRt, sep = "@")
+    unidentified_df$compoundId <- paste(unidentified_df$medMz, unidentified_df$medRt, sep = "@")
+    unidentified_df$formula <- ""
+  }
   maven_output_format <- rbind(identified_df, unidentified_df)
   
   # Replace NA's in samples with zero
