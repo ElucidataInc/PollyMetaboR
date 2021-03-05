@@ -213,21 +213,22 @@ calc_mass_from_formula_comp_data <- function(comp_data = NULL){
 #'
 #' @param mz_data A dataframe or numeric vector of mz values
 #' @param comp_data The compound database used for identification
-#' @param mz_colname A mz column name present in mz_data dataframe
+#' @param mz_colname The mz column name present in mz_data dataframe
 #' @param mz_tolerence_unit The mz tolerance unit (ppm or Da)
 #' @param mz_tolerence Value of mz tolerence
 #' @param rt_tolerence Value of rt tolerence in minutes
+#' @param rt_colname The rt column name present in mz_data dataframe
 #' @param numcores Number of cores used for processing
 #' @return A dataframe with identified metabolites
 #' @examples
 #' perform_metabolite_identification(mz_data, comp_data, mz_colname = 'basemass',
-#'                                   mz_tolerence_unit = "ppm", mz_tolerence = 20, rt_tolerence = 0.05)
+#'                                   mz_tolerence_unit = "ppm", mz_tolerence = 20)
 #' @export
-perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL, 
-                                              mz_colname = 'basemass', mz_tolerence_unit = "ppm",
-                                              mz_tolerence = 20, rt_tolerence = NULL, numcores = 2){
+perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL, mz_colname = 'basemass',
+                                              mz_tolerence_unit = "ppm", mz_tolerence = 20, rt_tolerence = NULL,
+                                              rt_colname = 'rt', numcores = 2){
   message("Perform Metabolite Identification Started...")
-
+  
   if(identical(mz_data, NULL)){
     warning("No mz_data was given")
     return (NULL)
@@ -270,13 +271,20 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   
   if (!("mass" %in% colnames(comp_data))){
     comp_data$mass <- NA
-  } 
+  }
+  
+  if (!identical(rt_tolerence, NULL)){
+    if (!(rt_colname %in% colnames(mz_data))){
+      warning(c("The ", rt_colname, " is not present in mz_data columns which should have rt values"))
+      return (NULL)
+    }      
+  }  
   
   comp_data <- PollyMetaboR::calc_mass_from_formula_comp_data(comp_data)
   
   mz_identify_metab <- function(mz_row){
     mz_source <- as.numeric(mz_row[[mz_colname]])
-    rt_source <- as.numeric(mz_row[['rt']])
+    rt_source <- as.numeric(mz_row[[rt_colname]])
     comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence, rt_source = rt_source, rt_tolerence = rt_tolerence))
     if (nrow(comp_data_filter) > 0){
       interm_df <- cbind(mz_row, comp_data_filter, row.names = NULL)   

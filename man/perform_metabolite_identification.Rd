@@ -11,6 +11,7 @@ perform_metabolite_identification(
   mz_tolerence_unit = "ppm",
   mz_tolerence = 20,
   rt_tolerence = NULL,
+  rt_colname = "rt",
   numcores = 2
 )
 }
@@ -19,13 +20,15 @@ perform_metabolite_identification(
 
 \item{comp_data}{The compound database used for identification}
 
-\item{mz_colname}{A mz column name present in mz_data dataframe}
+\item{mz_colname}{The mz column name present in mz_data dataframe}
 
 \item{mz_tolerence_unit}{The mz tolerance unit (ppm or Da)}
 
 \item{mz_tolerence}{Value of mz tolerence}
 
 \item{rt_tolerence}{Value of rt tolerence in minutes}
+
+\item{rt_colname}{The rt column name present in mz_data dataframe}
 
 \item{numcores}{Number of cores used for processing}
 }
@@ -37,5 +40,5 @@ It restructures the camera output to group features
 }
 \examples{
 perform_metabolite_identification(mz_data, comp_data, mz_colname = 'basemass',
-                                  mz_tolerence_unit = "ppm", mz_tolerence = 20, rt_tolerence = 0.05)
+                                  mz_tolerence_unit = "ppm", mz_tolerence = 20)
 }
