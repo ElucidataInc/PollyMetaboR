@@ -148,10 +148,10 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL, mz_tol
           axis.title = element_text(colour = "black",margin = 1,
                                     size = 14, face = "plain"), 
           axis.text.x = element_text(colour = "black", size = 10, angle = 90, hjust = 1, 
-                                     margin = unit(c(0.5,0.5, 0.1, 0.1), "cm"), face = "plain"),
+                                     margin = unit(c(0.2,0.2, 0.1, 0.1), "cm"), face = "plain"),
           axis.text.y = element_text(colour = "black", size = 10, 
-                                     margin = unit(c(0.5, 0.5, 0.1, 0.1), "cm"), face = "plain"),
-          axis.ticks.length = unit(-0.25, "cm"), legend.position = "none") +
+                                     margin = unit(c(0.2, 0.2, 0.1, 0.1), "cm"), face = "plain"),
+          axis.ticks.length = unit(0.25, "cm"), legend.position = "none") +
     ggplot2::annotate(geom = "text",  x=Inf, y = Inf, label = top_label, vjust=1, hjust=1) + 
     ggplot2::annotate(geom = "text",  x= Inf, y = -Inf, label = bottom_label, vjust=-1, hjust=1)
   
