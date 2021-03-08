@@ -168,8 +168,8 @@ plot_eic <- function(intensity_data = NULL, rt_min = NULL, rt_max = NULL, set_rt
             plot.title = element_text(colour = "black", size = title_label_size, face = "bold", hjust = 0.5),
             axis.title.x = element_text(colour ="black", size = x_label_size, face = "bold"), # axis title
             axis.title.y = element_text(colour = "black", size = y_label_size, face = "bold"), # axis title   
-            axis.text.x = element_text(colour = "black", size = x_text_size, margin=unit(c(0.5,0.5,0.1,0.1), "cm"), face = "bold"), # x-axis text in fontsize 10
-            axis.text.y = element_text(colour = "black", size = y_text_size, margin=unit(c(0.5,0.5,0.1,0.1), "cm"), face = "bold"), # y-axis text in fontsize 10
+            axis.text.x = element_text(colour = "black", size = x_text_size, margin=unit(c(0.2,0.2,0.1,0.1), "cm"), face = "bold"), # x-axis text in fontsize 10
+            axis.text.y = element_text(colour = "black", size = y_text_size, margin=unit(c(0.2,0.2,0.1,0.1), "cm"), face = "bold"), # y-axis text in fontsize 10
             legend.text = element_text(size = legend_text_size, face = "bold"),
             legend.title = element_text(colour = "black", size = title_label_size, face = "bold"),
             axis.ticks.length = unit(0.25, "cm")) # ticks facing inward with 0.25cm length
