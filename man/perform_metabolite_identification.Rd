@@ -12,6 +12,7 @@ perform_metabolite_identification(
   mz_tolerence = 20,
   rt_tolerence = NULL,
   rt_colname = "rt",
+  wrap_comp = FALSE,
   numcores = 2
 )
 }
@@ -29,6 +30,8 @@ perform_metabolite_identification(
 \item{rt_tolerence}{Value of rt tolerence in minutes}
 
 \item{rt_colname}{The rt column name present in mz_data dataframe}
+
+\item{wrap_comp}{Wrap compounds in same row detected for same feature (mz and rt)}
 
 \item{numcores}{Number of cores used for processing}
 }
