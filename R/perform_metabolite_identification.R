@@ -218,6 +218,7 @@ calc_mass_from_formula_comp_data <- function(comp_data = NULL){
 #' @param mz_tolerence Value of mz tolerence
 #' @param rt_tolerence Value of rt tolerence in minutes
 #' @param rt_colname The rt column name present in mz_data dataframe
+#' @param wrap_comp Wrap compounds in same row detected for same feature (mz and rt)
 #' @param numcores Number of cores used for processing
 #' @return A dataframe with identified metabolites
 #' @examples
@@ -226,7 +227,7 @@ calc_mass_from_formula_comp_data <- function(comp_data = NULL){
 #' @export
 perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL, mz_colname = 'basemass',
                                               mz_tolerence_unit = "ppm", mz_tolerence = 20, rt_tolerence = NULL,
-                                              rt_colname = 'rt', numcores = 2){
+                                              rt_colname = 'rt', wrap_comp = FALSE, numcores = 2){
   message("Perform Metabolite Identification Started...")
   
   if(identical(mz_data, NULL)){
@@ -287,16 +288,30 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
     rt_source <- as.numeric(mz_row[[rt_colname]])
     comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence, rt_source = rt_source, rt_tolerence = rt_tolerence))
     if (nrow(comp_data_filter) > 0){
-      interm_df <- cbind(mz_row, comp_data_filter, row.names = NULL)   
+      if (identical(wrap_comp, TRUE)){
+        comp_data_filter_unique <- data.frame(stringsAsFactors = FALSE, check.names = FALSE)
+        for (coln in colnames(comp_data_filter)){
+          if (length(unique(comp_data_filter[, coln])) > 1){  
+            comp_data_filter_unique[1, coln] <- paste(as.character(comp_data_filter[, coln]), collapse = ";")
+          }
+          else {
+            comp_data_filter_unique[1, coln] <- unique(comp_data_filter[, coln])[1]
+          }  
+        }
+        interm_df <- cbind(mz_row, comp_data_filter_unique, row.names = NULL)    
+      }
+      else {
+        interm_df <- cbind(mz_row, comp_data_filter, row.names = NULL)   
+      }  
     }
     else {
       comp_data_cols <- colnames(comp_data_filter)
       interm_df <- mz_row
-      interm_df[,comp_data_cols] <- NA   
-    } 
+      interm_df[, comp_data_cols] <- NA   
+    }
     return(interm_df)
   }
-  
+
   run_split_df <- function(split_mz_data_element){
     metabolite_identified_split_df <- data.frame()
     for (row_index in 1:nrow(split_mz_data_element)){

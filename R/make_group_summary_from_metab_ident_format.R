@@ -113,6 +113,7 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
   # Replace NA's in samples with zero
   maven_output_format[samples_vec][is.na(maven_output_format[samples_vec])] <- 0
   maven_output_format[maven_default_cols][is.na(maven_output_format[maven_default_cols])] <- ""
+  maven_output_format <- maven_output_format[with(maven_output_format, order(metaGroupId, groupId)), ]
   
   message("Make Group Summary From Metab Ident Format Completed...")
   
