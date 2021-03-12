@@ -21,26 +21,16 @@ get_peak_list <- function(object, intval="maxo") {
     stop("unknown intensity value!")
   }
   
-  #generate peaktable
-  #Check if xcmsSet contains only one sample
-  if(object@sample[1] == 1 & length(sampnames(object@xcmsSet)) == 1){
-    #intval is here ignored since all intensity values are already contained
-    peaktable <- object@groupInfo;
-  }else {
-    #Case of xcmsSet with multiple samples
-    #Use groupInfo information and replace intensity values
-    peaktable <- object@groupInfo;
-    
-    #get intensity values from xcmsSet
-    grpval <- groupval(object@xcmsSet, value=intval);
-    
-    #get column range for replacement
-    grpval.ncol <- ncol(grpval)
-    start <- ncol(peaktable) - grpval.ncol +1;
-    ende  <- start + grpval.ncol - 1; 
-    
-    peaktable[, start:ende] <- grpval;
-  }
+  #Use groupInfo information and replace intensity values
+  peaktable <- object@groupInfo;
+  #get intensity values from xcmsSet
+  grpval <- groupval(object@xcmsSet, value=intval);
+  #get column range for replacement
+  grpval.ncol <- ncol(grpval)
+  start <- ncol(peaktable) - grpval.ncol +1;
+  ende  <- start + grpval.ncol - 1; 
+  peaktable[, start:ende] <- grpval;
+  colnames(peaktable)[start:ende] <- colnames(grpval);
   
   #allocate variables for CAMERA output
   adduct   <- vector("character", nrow(object@groupInfo));

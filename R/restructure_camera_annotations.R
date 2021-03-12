@@ -216,6 +216,10 @@ restructure_camera_annotations <- function(annotated_peaks_df = NULL, polarity =
                                                                         order(pcgroup, feature_group, adduct_type, 
                                                                               isotope_id, isotope_type)), ]
   
+  if (nrow(all_isotope_adduct_grouped_result_df) > 0) {row.names(all_isotope_adduct_grouped_result_df) <- NULL }
+  if (nrow(all_unannotated_camera_df) > 0) {row.names(all_unannotated_camera_df) <- NULL }
+  if (nrow(final_grouped_camera_result_df) > 0) {row.names(final_grouped_camera_result_df) <- NULL }
+  
   output_dfs <- list("annotated" = all_isotope_adduct_grouped_result_df, "unannotated" = all_unannotated_camera_df, "combined" = final_grouped_camera_result_df)
   
   message("Restructure CAMERA Annotations Completed...")

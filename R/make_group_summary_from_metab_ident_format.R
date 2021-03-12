@@ -20,10 +20,10 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
     return (NULL)
   }
   
-  metab_default_cols  <- c('mz', 'mzmin', 'mzmax', 'rt', 'rtmin', 'rtmax', 'groupId',
-                           'identified', 'isotopes', 'adduct', 'pcgroup', 'adduct_type',
-                           'basemass', 'isotope_id', 'isotope_type', 'feature_group',
-                           'compound', 'id', 'formula', 'mass', 'rt_db', 'identification_type')
+  metab_default_cols  <- c('mz', 'mzmin', 'mzmax', 'rt', 'rtmin', 'rtmax','into', 'maxo', 'Index',
+                           'groupId', 'identified', 'isotopes', 'adduct', 'pcgroup', 'adduct_type',
+                           'basemass', 'isotope_id', 'isotope_type', 'feature_group', 'compound',
+                           'id', 'formula', 'mass', 'rt_db', 'identification_type')
   
   maven_default_cols <- c("label", "metaGroupId", "groupId", "goodPeakCount", "medMz",
                           "medRt", "maxQuality", "adductName", "isotopeLabel", "compound",
@@ -113,7 +113,7 @@ make_group_summary_from_metab_ident_format <- function(metab_identified_df = NUL
   # Replace NA's in samples with zero
   maven_output_format[samples_vec][is.na(maven_output_format[samples_vec])] <- 0
   maven_output_format[maven_default_cols][is.na(maven_output_format[maven_default_cols])] <- ""
-  maven_output_format <- maven_output_format[with(maven_output_format, order(metaGroupId, groupId)), ]
+  maven_output_format <- maven_output_format[with(maven_output_format, order(metaGroupId, adductName, isotopeLabel, groupId)), ]
   
   message("Make Group Summary From Metab Ident Format Completed...")
   
