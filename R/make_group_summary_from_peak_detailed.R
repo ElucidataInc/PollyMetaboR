@@ -21,10 +21,7 @@ make_group_summary_from_peak_detailed <- function(maven_output_df = NULL, quant_
     return (NULL)
   }
   
-  required_cols <- c("groupId", "compound", "compoundId", "formula", "sample", "adductName", "peakMz", 
-                     "mzmin", "mzmax", "rt", "rtmin", "rtmax", "quality", "peakIntensity", "peakArea", 
-                     "peakSplineArea", "peakAreaTop", "peakAreaCorrected", "peakAreaTopCorrected", 
-                     "noNoiseObs", "signalBaseLineRatio", "fromBlankSample")
+  required_cols <- c("groupId", "compound", "compoundId", "formula", "sample", "peakMz", "rt")
   
   diff_cols <- setdiff(required_cols, colnames(maven_output_df))
   if (length(diff_cols) > 0){
