@@ -286,7 +286,9 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   mz_identify_metab <- function(mz_row){
     mz_source <- as.numeric(mz_row[[mz_colname]])
     rt_source <- as.numeric(mz_row[[rt_colname]])
-    comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit, mz_tolerence = mz_tolerence, rt_source = rt_source, rt_tolerence = rt_tolerence))
+    comp_data_filter <- suppressMessages(PollyMetaboR::mz_search_with_comp_data(mz_source, comp_data, mz_tolerence_unit = mz_tolerence_unit,
+                                                                                mz_tolerence = mz_tolerence, rt_source = rt_source, 
+                                                                                rt_tolerence = rt_tolerence))
     if (nrow(comp_data_filter) > 0){
       if (identical(wrap_comp, TRUE)){
         comp_data_filter_unique <- data.frame(stringsAsFactors = FALSE, check.names = FALSE)
@@ -311,7 +313,7 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
     }
     return(interm_df)
   }
-
+  
   run_split_df <- function(split_mz_data_element){
     metabolite_identified_split_df <- data.frame()
     for (row_index in 1:nrow(split_mz_data_element)){
@@ -324,21 +326,23 @@ perform_metabolite_identification <- function(mz_data = NULL,  comp_data = NULL,
   }
   
   ###Split mz data into chunks of 1000 features each###
-  split_mz_data_list <- split(mz_data, (as.numeric(1:nrow(mz_data))-1) %/% 1000)
-  
+  cores_split_mz_data_list <- mz_data
+  rm(mz_data)
+  cores_split_mz_data_list <- split(cores_split_mz_data_list, (as.numeric(1:nrow(cores_split_mz_data_list))-1) %/% 1000)
   ###Run each future run on only specified core (numcores)###
-  cores_split_mz_data_list <- split(split_mz_data_list, ((1:length(split_mz_data_list))-1) %/% numcores)
-  
+  cores_split_mz_data_list <- split(cores_split_mz_data_list, ((1:length(cores_split_mz_data_list))-1) %/% numcores)
   metabolite_identified_df <- data.frame()
-  for (i in names(cores_split_mz_data_list)){
-    identify_metab_future <- lapply(cores_split_mz_data_list[[i]],
-                                    function(split_mz_data_element) future::future({run_split_df(split_mz_data_element)}))
-    metabolite_identified_list <- lapply(identify_metab_future, future::value) # grab the results
-    interm_core_split_future_df <- data.table::rbindlist(metabolite_identified_list, fill = TRUE)
-    metabolite_identified_df <- rbind(metabolite_identified_df, interm_core_split_future_df)  
+  for (core_index in names(cores_split_mz_data_list)){
+    interm_core_split_future <- NULL  
+    interm_core_split_future <- lapply(cores_split_mz_data_list[[core_index]],
+                                       function(split_mz_data_element) future::future({run_split_df(split_mz_data_element)}))
+    interm_core_split_future <- lapply(interm_core_split_future, future::value) # grab the results
+    interm_core_split_future <- data.table::rbindlist(interm_core_split_future, fill = TRUE)
+    metabolite_identified_df <- rbind(metabolite_identified_df, interm_core_split_future)  
   }
   
-  metabolite_identified_df <- as.data.frame(metabolite_identified_df, stringsAsFactors = FALSE)
+  rm(comp_data, interm_core_split_future)
+  metabolite_identified_df <- as.data.frame(metabolite_identified_df, stringsAsFactors = FALSE, check.names = FALSE)
   
   message("Perform Metabolite Identification Completed...")
   
