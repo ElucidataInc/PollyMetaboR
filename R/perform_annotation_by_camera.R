@@ -86,33 +86,27 @@ perform_annotation_by_camera <- function(xcms_object = NULL, polarity = NULL, pp
   
   tryCatch(
     camera_obj <- CAMERA::xsAnnotate(xcms_object, polarity = polarity),
-    error=function(cond) {message(paste("Cannot run CAMERA::xsAnnotate() function, caused an error: ", cond))},
-    warning=function(cond) {message(paste("The CAMERA::xsAnnotate() caused a warning:", cond))}
+    error=function(cond) {message(paste("Cannot run CAMERA::xsAnnotate() function, caused an error: ", cond))}
   )  
   tryCatch(
     camera_obj <- CAMERA::groupFWHM(camera_obj, sigma = sigma, perfwhm = perfwhm, intval = "maxo"),
-    error=function(cond) {message(paste("Cannot run CAMERA::groupFWHM() function, caused an error: ", cond))},
-    warning=function(cond) {message(paste("The CAMERA::groupFWHM() caused a warning:", cond))}
+    error=function(cond) {message(paste("Cannot run CAMERA::groupFWHM() function, caused an error: ", cond))}
   )       
   tryCatch(
     camera_obj <- CAMERA::groupCorr(camera_obj, calcCiS = FALSE, calcCaS = TRUE, cor_exp_th = cor_exp_th, pval = pval, intval = "maxo"),
-    error=function(cond) {message(paste("Cannot run CAMERA::groupCorr() function, caused an error: ", cond))},
-    warning=function(cond) {message(paste("The CAMERA::groupCorr() caused a warning:", cond))}
+    error=function(cond) {message(paste("Cannot run CAMERA::groupCorr() function, caused an error: ", cond))}
   )
   tryCatch(
     camera_obj <- CAMERA::findIsotopes(camera_obj, maxcharge = maxcharge, maxiso = maxiso, ppm = ppm, mzabs = mzabs, intval = "maxo", minfrac = minfrac, isotopeMatrix = isotope_matrix),
-    error=function(cond) {message(paste("Cannot run CAMERA::findIsotopes() function, caused an error: ", cond))},
-    warning=function(cond) {message(paste("The CAMERA::findIsotopes() caused a warning:", cond))}
+    error=function(cond) {message(paste("Cannot run CAMERA::findIsotopes() function, caused an error: ", cond))}
   )
   tryCatch(
     camera_obj <- CAMERA::findAdducts(camera_obj, ppm = ppm, mzabs = mzabs, multiplier = multiplier, polarity = polarity, rules = adducts_rules, max_peaks = max_peaks, intval = "maxo"),
-    error=function(cond) {message(paste("Cannot run CAMERA::findAdducts() function, caused an error: ", cond))},
-    warning=function(cond) {message(paste("The CAMERA::findAdducts() caused a warning:", cond))}
+    error=function(cond) {message(paste("Cannot run CAMERA::findAdducts() function, caused an error: ", cond))}
   )    
   tryCatch(
     annotated_peaks_df <- PollyMetaboR::get_peak_list(camera_obj, intval = "maxo"),
-    error=function(cond) {message(paste("Cannot run get_peak_list() function, caused an error: ", cond))},
-    warning=function(cond) {message(paste("The get_peak_list() caused a warning:", cond))}
+    error=function(cond) {message(paste("Cannot run get_peak_list() function, caused an error: ", cond))}
   )
   
   if (identical(annotated_peaks_df, NULL)){
