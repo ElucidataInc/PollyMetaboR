@@ -76,7 +76,6 @@ plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotat
       warning("The mz_range is not a numeric vector of two elements") 
       return (NULL)
     }      
-    
   }    
   
   if (identical(show_rel_intensity, TRUE)){ 

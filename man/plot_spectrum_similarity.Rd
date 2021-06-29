@@ -7,15 +7,19 @@
 plot_spectrum_similarity(
   spec_query = NULL,
   spec_ref = NULL,
-  mz_tolerence_unit = "ppm",
   mz_tolerence = 20,
-  mz_range = c(0, 1600),
-  interactive = FALSE,
-  x_label = "mz",
-  y_label = "intensity(\%)",
-  title_label = "",
-  top_label = "Query Spectra",
-  bottom_label = "Reference Spectra"
+  mz_tolerence_unit = "ppm",
+  annotate_mz = FALSE,
+  annotate_mz_cutoff = NULL,
+  intensity_cutoff = NULL,
+  mz_precision = NULL,
+  mz_range = NULL,
+  x_label = NULL,
+  y_label = NULL,
+  title_label = NULL,
+  top_label = NULL,
+  bottom_label = NULL,
+  interactive = FALSE
 )
 }
 \arguments{
@@ -23,11 +27,19 @@ plot_spectrum_similarity(
 
 \item{spec_ref}{The reference spectrum dataframe with mz and intensity columns}
 
-\item{mz_tolerence_unit}{Value of mz tolerence}
+\item{mz_tolerence}{Value of mz tolerence}
+
+\item{mz_tolerence_unit}{The mz tolerence unit (ppm or Da)}
+
+\item{annotate_mz}{Annotate mz values on spectrum, select from TRUE/FALSE}
+
+\item{annotate_mz_cutoff}{The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to annotate mz peaks}
+
+\item{intensity_cutoff}{The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to filter data}
+
+\item{mz_precision}{The numeric precision of mz which is equal to the number of digits to show on mz annotation}
 
 \item{mz_range}{The mz range used to calculate score}
-
-\item{interactive}{Make plot interactive using plotly}
 
 \item{x_label}{Label x-axis}
 
@@ -38,6 +50,8 @@ plot_spectrum_similarity(
 \item{top_label}{Specify top label}
 
 \item{bottom_label}{Specify bottom label}
+
+\item{interactive}{Make plot interactive using plotly}
 }
 \value{
 ggplot object or plotly object
@@ -46,5 +60,5 @@ ggplot object or plotly object
 It plots the query spectra w.r.t the reference spectra
 }
 \examples{
-plot_spectrum_similarity(spec_query, spec_ref, mz_tolerence_unit = "ppm", mz_tolerence = 10, mz_range = c(0, 1600))
+plot_spectrum_similarity(spec_query, spec_ref, mz_tolerence = 10, mz_tolerence_unit = "ppm")
 }
