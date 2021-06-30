@@ -11,7 +11,7 @@ read_msp(msp_path = NULL, compound = NULL, exact_match = TRUE)
 
 \item{compound}{A vector of features/compounds to search in the msp file which is optional}
 
-\item{exact_match}{Search exact match (TRUE) or do partial matching of compound names in the msp file}
+\item{exact_match}{Search exact match (TRUE) or do partial matching (FALSE) of compound names in the msp file}
 }
 \value{
 A list of msp data

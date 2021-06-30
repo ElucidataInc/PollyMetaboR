@@ -4,7 +4,7 @@
 #'
 #' @param msp_path The path to msp file
 #' @param compound A vector of features/compounds to search in the msp file which is optional
-#' @param exact_match Search exact match (TRUE) or do partial matching of compound names in the msp file
+#' @param exact_match Search exact match (TRUE) or do partial matching (FALSE) of compound names in the msp file
 #' @return A list of msp data
 #' @examples
 #' read_msp(msp_path)
