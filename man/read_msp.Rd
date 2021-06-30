@@ -4,12 +4,14 @@
 \alias{read_msp}
 \title{read_msp}
 \usage{
-read_msp(msp_path = NULL, compound = NULL)
+read_msp(msp_path = NULL, compound = NULL, exact_match = TRUE)
 }
 \arguments{
 \item{msp_path}{The path to msp file}
 
 \item{compound}{A vector of features/compounds to search in the msp file which is optional}
+
+\item{exact_match}{Search exact match (TRUE) or do partial matching (FALSE) of compound names in the msp file}
 }
 \value{
 A list of msp data

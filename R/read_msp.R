@@ -4,11 +4,12 @@
 #'
 #' @param msp_path The path to msp file
 #' @param compound A vector of features/compounds to search in the msp file which is optional
+#' @param exact_match Search exact match (TRUE) or do partial matching (FALSE) of compound names in the msp file
 #' @return A list of msp data
 #' @examples
 #' read_msp(msp_path)
 #' @export
-read_msp <- function(msp_path = NULL, compound = NULL){
+read_msp <- function(msp_path = NULL, compound = NULL, exact_match = TRUE){
   message("Read MSP Started...")
   require(data.table)
   require(dplyr)
@@ -27,6 +28,10 @@ read_msp <- function(msp_path = NULL, compound = NULL){
   if (!identical(tools::file_ext(msp_path), "msp")){
     warning(paste("The", sQuote(msp_path), "does not end with '.msp'", sep = " "))
     return (NULL)      
+  }
+  
+  if (!identical(compound, NULL)){
+    if (identical(exact_match, NULL)){ exact_match <- TRUE}  
   }
   
   file_con  <- file(msp_path, open = "r")
@@ -52,14 +57,24 @@ read_msp <- function(msp_path = NULL, compound = NULL){
       else {
         compound <- stringr::str_trim(compound)
         if (any(sapply(compound, function(x) grepl(x, one_line, fixed = TRUE))) && grepl("Name: ", one_line, fixed = FALSE, ignore.case = TRUE)){
-          split_line <- stringr::str_trim(stringr::str_split(one_line, ": ", 2)[[1]])
-          if (any(split_line[2] %in% compound)){
+          if (identical(exact_match, FALSE)){
             name_list <- list()
             spectrum_list <- NULL
             name_index <- name_index + 1
             name_bool <- TRUE
             num_peaks <- 0
             count_peaks <- 0
+          }
+          else {
+            split_line <- stringr::str_trim(stringr::str_split(one_line, ": ", 2)[[1]])
+            if (any(split_line[2] %in% compound)){
+              name_list <- list()
+              spectrum_list <- NULL
+              name_index <- name_index + 1
+              name_bool <- TRUE
+              num_peaks <- 0
+              count_peaks <- 0
+            }
           }
         }
       }  
