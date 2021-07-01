@@ -1,7 +1,7 @@
 Package: PollyMetaboR
 Type: Package
 Title: Package specific to metabolomics
-Version: 0.5.2
+Version: 0.5.3
 Author: Sunil Dhakad
 Maintainer: The package maintainer <sunil.dhakad@elucidata.io>
 Description: This package contains functions used in metabolomics.
@@ -11,6 +11,7 @@ Imports:
     CAMERA (>= 1.42.0),
     xcms (>= 3.8.1),
     stringr(>= 1.4.0),
+    stringi(>= 1.5.3),
     plotly(>= 4.9.0),
     ggplot2(>= 3.3.0),
     ggrepel(>= 0.8.1),
