@@ -14,6 +14,7 @@ plot_spectrum_similarity(
   intensity_cutoff = NULL,
   mz_precision = NULL,
   mz_range = NULL,
+  start_from_zero = TRUE,
   x_label = NULL,
   y_label = NULL,
   title_label = NULL,
@@ -40,6 +41,8 @@ plot_spectrum_similarity(
 \item{mz_precision}{The numeric precision of mz which is equal to the number of digits to show on mz annotation}
 
 \item{mz_range}{The mz range used to calculate score}
+
+\item{start_from_zero}{Force x and y axes to start from zero (TRUE/FALSE)}
 
 \item{x_label}{Label x-axis}
 

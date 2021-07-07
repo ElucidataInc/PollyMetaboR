@@ -9,6 +9,7 @@
 #' @param mz_precision The numeric precision of mz which is equal to the number of digits to show on mz annotation
 #' @param show_rel_intensity Show relative intensity in percentage (TRUE) on y axis which is calculated w.r.t base peak
 #' @param mz_range The mz range used to calculate score
+#' @param start_from_zero Force x and y axes to start from zero (TRUE/FALSE)
 #' @param x_label Label x-axis
 #' @param y_label Label x-axis
 #' @param title_label Title of the plot
@@ -20,7 +21,7 @@
 #' @export
 plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotate_mz_cutoff = NULL, 
                                 intensity_cutoff = NULL, mz_precision = NULL, show_rel_intensity = FALSE,
-                                mz_range = NULL, x_label = NULL, y_label = NULL, 
+                                mz_range = NULL, start_from_zero = TRUE, x_label = NULL, y_label = NULL, 
                                 title_label = NULL, interactive = FALSE){
   message("Plot Mass Spectrum Started...")
   require(plotly)
@@ -117,8 +118,7 @@ plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotat
   p <- ggplot(data = ms_spectrum, aes_string(x = "mz", y = intensity_type, text = "text_label", label = "mz_annotate",  width = 0.1)) + 
     geom_bar(color = "red", fill = "red",
              stat = "identity", position = "dodge", orientation = "x") +
-    ggtitle(title_label) + 
-    labs(x = x_label, y = y_label) +
+    labs(x = x_label, y = y_label, title = title_label) +
     geom_hline(yintercept = 0, size = 0.4) +                                    
     ggsci::scale_color_aaas() + scale_fill_identity() +
     theme(axis.line = element_line(size = 1, colour = "black"), 
@@ -134,11 +134,14 @@ plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotat
                                      margin = unit(c(0.2, 0.2, 0.1, 0.1), "cm"), face = "plain"),
           axis.ticks.length = unit(0.25, "cm"), legend.position = "none")
   
-  if (!identical(interactive, TRUE)){ 
+  
+  if (identical(start_from_zero, TRUE)){ p <- p + expand_limits(x = 0, y = 0)}  
+  
+  if (identical(interactive, FALSE)){
     if (identical(annotate_mz, TRUE)){ p <- p + ggrepel::geom_text_repel()}     
   }
   else {
-    if (identical(annotate_mz, TRUE)){ p <- p + geom_text()}
+    if (identical(annotate_mz, TRUE)){ p <- p + geom_text(position = ggplot2::position_stack(vjust = 1.05))}
     p <- ggplotly(p, tooltip = c("text")) %>% layout(hovermode = TRUE)  %>% 
       plotly::config(displaylogo = FALSE,
                      modeBarButtons = list(list("zoom2d"),
