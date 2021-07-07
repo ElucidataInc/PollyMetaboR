@@ -12,6 +12,7 @@ plot_mass_spectrum(
   mz_precision = NULL,
   show_rel_intensity = FALSE,
   mz_range = NULL,
+  start_from_zero = TRUE,
   x_label = NULL,
   y_label = NULL,
   title_label = NULL,
@@ -32,6 +33,8 @@ plot_mass_spectrum(
 \item{show_rel_intensity}{Show relative intensity in percentage (TRUE) on y axis which is calculated w.r.t base peak}
 
 \item{mz_range}{The mz range used to calculate score}
+
+\item{start_from_zero}{Force x and y axes to start from zero (TRUE/FALSE)}
 
 \item{x_label}{Label x-axis}
 

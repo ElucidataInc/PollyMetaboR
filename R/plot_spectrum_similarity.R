@@ -11,6 +11,7 @@
 #' @param intensity_cutoff The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to filter data
 #' @param mz_precision The numeric precision of mz which is equal to the number of digits to show on mz annotation
 #' @param mz_range The mz range used to calculate score
+#' @param start_from_zero Force x and y axes to start from zero (TRUE/FALSE)
 #' @param x_label Label x-axis
 #' @param y_label Label x-axis
 #' @param title_label Title of the plot
@@ -25,7 +26,7 @@
 plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_tolerence = 20,
                                       mz_tolerence_unit = "ppm", annotate_mz = FALSE, annotate_mz_cutoff = NULL,
                                       intensity_cutoff = NULL, mz_precision = NULL, mz_range = NULL,
-                                      x_label = NULL, y_label = NULL, title_label = NULL,
+                                      start_from_zero = TRUE, x_label = NULL, y_label = NULL, title_label = NULL,
                                       top_label = NULL, bottom_label = NULL, interactive = FALSE){
   message("Plot Spectrum Similarity Started...")
   require(plotly)
@@ -198,8 +199,7 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
     geom_bar(data = ref_score, aes(x = mz, y = intensity, fill = matched_color,
                                    text = data_type, width = 1),
              stat = "identity", position = "dodge",  orientation = "x") +
-    ggtitle(title_label) + 
-    labs(x = x_label, y = y_label) +
+    labs(x = x_label, y = y_label, title = title_label) +
     geom_hline(yintercept = 0, size = 0.4) +                                    
     ggsci::scale_color_aaas() + scale_fill_identity() +
     theme(axis.line = element_line(size = 1, colour = "black"), 
@@ -217,11 +217,16 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
     ggplot2::annotate(geom = "text",  x=Inf, y = Inf, label = top_label, vjust=1, hjust=1) + 
     ggplot2::annotate(geom = "text",  x= Inf, y = -Inf, label = bottom_label, vjust=-1, hjust=1)
   
+  if (identical(start_from_zero, TRUE)){ p <- p + expand_limits(x = 0, y = 0)}                                             
+  
   if (!identical(interactive, TRUE)){ 
     if (identical(annotate_mz, TRUE)){ p <- p + ggrepel::geom_text_repel(data = query_score, aes(x = mz, y = intensity, text = data_type, label = mz_annotate))}     
   }
   else {
-    if (identical(annotate_mz, TRUE)){ p <- p + geom_text(data = query_score, aes(x = mz, y = intensity, text = data_type, label = mz_annotate))}                                            
+    if (identical(annotate_mz, TRUE)){ 
+      p <- p + geom_text(data = query_score, aes(x = mz, y = intensity, text = data_type, label = mz_annotate), position = ggplot2::position_stack(vjust = 1.05))
+    }
+    
     p <- ggplotly(p, tooltip = c("x", "y", "text")) %>% layout(hovermode = TRUE) %>% 
       plotly::config(displaylogo = FALSE,
                      modeBarButtons = list(list("zoom2d"),
