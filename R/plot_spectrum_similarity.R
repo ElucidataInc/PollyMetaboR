@@ -145,7 +145,13 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
     return (NULL)   
   }
   query_tmp$normalized <- round(((query_tmp$intensity/max(query_tmp$intensity)) * 100), 2)
-  if(!identical(intensity_cutoff, NULL)){ query_tmp <- subset(query_tmp, normalized >= intensity_cutoff)}  
+  if(!identical(intensity_cutoff, NULL)){ query_tmp <- subset(query_tmp, normalized >= intensity_cutoff)}
+  
+  if (nrow(query_tmp) < 1){
+    warning("No data present for specified intensity_cutoff")
+    return (NULL)    
+  }
+  
   query_score <- data.frame(mz = query_tmp$mz, intensity = query_tmp$normalized)
   query_score$matched_color <- "black"
   
@@ -156,7 +162,13 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
     return (NULL)   
   }
   ref_tmp$normalized <- round(((ref_tmp$intensity/max(ref_tmp$intensity)) * 100), 2)
-  if(!identical(intensity_cutoff, NULL)){ ref_tmp <- subset(ref_tmp, normalized >= intensity_cutoff)}  
+  if(!identical(intensity_cutoff, NULL)){ ref_tmp <- subset(ref_tmp, normalized >= intensity_cutoff)}
+  
+  if (nrow(ref_tmp) < 1){
+    warning("No data present for specified intensity_cutoff")
+    return (NULL)    
+  }   
+  
   ref_score <- data.frame(mz = ref_tmp$mz, intensity = -ref_tmp$normalized)
   ref_score$matched_color <- "red"   
   ref_score$matched_type <- "mismatched"
