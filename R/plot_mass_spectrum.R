@@ -4,8 +4,8 @@
 #'
 #' @param ms_spectrum The query spectrum dataframe with mz and intensity columns
 #' @param annotate_mz Annotate mz values on spectrum, select from TRUE/FALSE
-#' @param annotate_mz_cutoff The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to annotate mz peaks
-#' @param intensity_cutoff The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to filter data
+#' @param annotate_mz_threshold The intensity threshold in percentage w.r.t base peak (highest intensity peak) used to annotate mz peaks
+#' @param intensity_threshold The intensity threshold in percentage w.r.t base peak (highest intensity peak) used to filter data
 #' @param mz_precision The numeric precision of mz which is equal to the number of digits to show on mz annotation
 #' @param show_rel_intensity Show relative intensity in percentage (TRUE) on y axis which is calculated w.r.t base peak
 #' @param mz_range The mz range used to calculate score
@@ -19,8 +19,8 @@
 #' plot_mass_spectrum(ms_spectrum)
 #' @import plotly ggplot2
 #' @export
-plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotate_mz_cutoff = NULL, 
-                                intensity_cutoff = NULL, mz_precision = NULL, show_rel_intensity = FALSE,
+plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotate_mz_threshold = NULL, 
+                                intensity_threshold = NULL, mz_precision = NULL, show_rel_intensity = FALSE,
                                 mz_range = NULL, start_from_zero = TRUE, x_label = NULL, y_label = NULL, 
                                 title_label = NULL, interactive = FALSE){
   message("Plot Mass Spectrum Started...")
@@ -43,18 +43,18 @@ plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotat
     return (NULL)    
   }    
   
-  if(!identical(annotate_mz_cutoff, NULL)){
-    annotate_mz_cutoff <- as.numeric(annotate_mz_cutoff)
-    if (is.na(annotate_mz_cutoff)){
-      warning("The annotate_mz_cutoff is not a numeric value") 
+  if(!identical(annotate_mz_threshold, NULL)){
+    annotate_mz_threshold <- as.numeric(annotate_mz_threshold)
+    if (is.na(annotate_mz_threshold)){
+      warning("The annotate_mz_threshold is not a numeric value") 
       return (NULL)
     }  
   }    
   
-  if(!identical(intensity_cutoff, NULL)){
-    intensity_cutoff <- as.numeric(intensity_cutoff)
-    if (is.na(intensity_cutoff)){
-      warning("The intensity_cutoff is not a numeric value") 
+  if(!identical(intensity_threshold, NULL)){
+    intensity_threshold <- as.numeric(intensity_threshold)
+    if (is.na(intensity_threshold)){
+      warning("The intensity_threshold is not a numeric value") 
       return (NULL)
     }  
   }    
@@ -107,13 +107,13 @@ plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotat
   else { ms_spectrum[, "mz_annotate"] <- ms_spectrum$mz}
   
   ms_spectrum[, "rel_intensity"] <- round(((ms_spectrum$intensity/max(ms_spectrum$intensity)) * 100), 2)    
-  if(!identical(annotate_mz_cutoff, NULL)){
-    ms_spectrum[ms_spectrum[, "rel_intensity"] < annotate_mz_cutoff, "mz_annotate"] <- ""
+  if(!identical(annotate_mz_threshold, NULL)){
+    ms_spectrum[ms_spectrum[, "rel_intensity"] < annotate_mz_threshold, "mz_annotate"] <- ""
   }
-  if(!identical(intensity_cutoff, NULL)){ ms_spectrum <- subset(ms_spectrum, rel_intensity >= intensity_cutoff)}
+  if(!identical(intensity_threshold, NULL)){ ms_spectrum <- subset(ms_spectrum, rel_intensity >= intensity_threshold)}
 
   if (nrow(ms_spectrum) < 1){
-    warning("No data present for specified intensity_cutoff")
+    warning("No data present for specified intensity_threshold")
     return (NULL)    
   }
   
