@@ -111,6 +111,11 @@ plot_mass_spectrum <- function (ms_spectrum = NULL, annotate_mz = FALSE, annotat
     ms_spectrum[ms_spectrum[, "rel_intensity"] < annotate_mz_cutoff, "mz_annotate"] <- ""
   }
   if(!identical(intensity_cutoff, NULL)){ ms_spectrum <- subset(ms_spectrum, rel_intensity >= intensity_cutoff)}
+
+  if (nrow(ms_spectrum) < 1){
+    warning("No data present for specified intensity_cutoff")
+    return (NULL)    
+  }
   
   ms_spectrum$text_label<-  paste0(paste0("mz: ", ms_spectrum$mz), "<br>", paste0("intensity: ", ms_spectrum$intensity),
                                    "<br>", paste0("relatve intensity(%): ", ms_spectrum$rel_intensity))
