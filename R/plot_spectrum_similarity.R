@@ -7,8 +7,8 @@
 #' @param mz_tolerence Value of mz tolerence
 #' @param mz_tolerence_unit The mz tolerence unit (ppm or Da)
 #' @param annotate_mz Annotate mz values on spectrum, select from TRUE/FALSE
-#' @param annotate_mz_cutoff The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to annotate mz peaks
-#' @param intensity_cutoff The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to filter data
+#' @param annotate_mz_threshold The intensity threshold in percentage w.r.t base peak (highest intensity peak) used to annotate mz peaks
+#' @param intensity_threshold The intensity threshold in percentage w.r.t base peak (highest intensity peak) used to filter data
 #' @param mz_precision The numeric precision of mz which is equal to the number of digits to show on mz annotation
 #' @param mz_range The mz range used to calculate score
 #' @param start_from_zero Force x and y axes to start from zero (TRUE/FALSE)
@@ -24,8 +24,8 @@
 #' @import plotly ggplot2
 #' @export
 plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_tolerence = 20,
-                                      mz_tolerence_unit = "ppm", annotate_mz = FALSE, annotate_mz_cutoff = NULL,
-                                      intensity_cutoff = NULL, mz_precision = NULL, mz_range = NULL,
+                                      mz_tolerence_unit = "ppm", annotate_mz = FALSE, annotate_mz_threshold = NULL,
+                                      intensity_threshold = NULL, mz_precision = NULL, mz_range = NULL,
                                       start_from_zero = TRUE, x_label = NULL, y_label = NULL, title_label = NULL,
                                       top_label = NULL, bottom_label = NULL, interactive = FALSE){
   message("Plot Spectrum Similarity Started...")
@@ -86,18 +86,18 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
     }  
   }
   
-  if(!identical(annotate_mz_cutoff, NULL)){
-    annotate_mz_cutoff <- as.numeric(annotate_mz_cutoff)
-    if (is.na(annotate_mz_cutoff)){
-      warning("The annotate_mz_cutoff is not a numeric value") 
+  if(!identical(annotate_mz_threshold, NULL)){
+    annotate_mz_threshold <- as.numeric(annotate_mz_threshold)
+    if (is.na(annotate_mz_threshold)){
+      warning("The annotate_mz_threshold is not a numeric value") 
       return (NULL)
     }  
   }    
   
-  if(!identical(intensity_cutoff, NULL)){
-    intensity_cutoff <- as.numeric(intensity_cutoff)
-    if (is.na(intensity_cutoff)){
-      warning("The intensity_cutoff is not a numeric value") 
+  if(!identical(intensity_threshold, NULL)){
+    intensity_threshold <- as.numeric(intensity_threshold)
+    if (is.na(intensity_threshold)){
+      warning("The intensity_threshold is not a numeric value") 
       return (NULL)
     }  
   }    
@@ -145,10 +145,10 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
     return (NULL)   
   }
   query_tmp$normalized <- round(((query_tmp$intensity/max(query_tmp$intensity)) * 100), 2)
-  if(!identical(intensity_cutoff, NULL)){ query_tmp <- subset(query_tmp, normalized >= intensity_cutoff)}
+  if(!identical(intensity_threshold, NULL)){ query_tmp <- subset(query_tmp, normalized >= intensity_threshold)}
   
   if (nrow(query_tmp) < 1){
-    warning("No data present for specified intensity_cutoff")
+    warning("No data present for specified intensity_threshold")
     return (NULL)    
   }
   
@@ -162,10 +162,10 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
     return (NULL)   
   }
   ref_tmp$normalized <- round(((ref_tmp$intensity/max(ref_tmp$intensity)) * 100), 2)
-  if(!identical(intensity_cutoff, NULL)){ ref_tmp <- subset(ref_tmp, normalized >= intensity_cutoff)}
+  if(!identical(intensity_threshold, NULL)){ ref_tmp <- subset(ref_tmp, normalized >= intensity_threshold)}
   
   if (nrow(ref_tmp) < 1){
-    warning("No data present for specified intensity_cutoff")
+    warning("No data present for specified intensity_threshold")
     return (NULL)    
   }   
   
@@ -200,8 +200,8 @@ plot_spectrum_similarity <- function (spec_query = NULL, spec_ref = NULL,  mz_to
   if(!identical(mz_precision, NULL)){ query_score[, "mz_annotate"] <- round(query_score$mz, mz_precision)}
   else { query_score[, "mz_annotate"] <- query_score$mz}
   
-  if(!identical(annotate_mz_cutoff, NULL)){
-    query_score[query_score[, "intensity"] < annotate_mz_cutoff, "mz_annotate"] <- ""
+  if(!identical(annotate_mz_threshold, NULL)){
+    query_score[query_score[, "intensity"] < annotate_mz_threshold, "mz_annotate"] <- ""
   }
   
   p <- ggplot() + 

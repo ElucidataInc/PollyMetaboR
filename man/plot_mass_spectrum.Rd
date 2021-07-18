@@ -7,8 +7,8 @@
 plot_mass_spectrum(
   ms_spectrum = NULL,
   annotate_mz = FALSE,
-  annotate_mz_cutoff = NULL,
-  intensity_cutoff = NULL,
+  annotate_mz_threshold = NULL,
+  intensity_threshold = NULL,
   mz_precision = NULL,
   show_rel_intensity = FALSE,
   mz_range = NULL,
@@ -24,9 +24,9 @@ plot_mass_spectrum(
 
 \item{annotate_mz}{Annotate mz values on spectrum, select from TRUE/FALSE}
 
-\item{annotate_mz_cutoff}{The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to annotate mz peaks}
+\item{annotate_mz_threshold}{The intensity threshold in percentage w.r.t base peak (highest intensity peak) used to annotate mz peaks}
 
-\item{intensity_cutoff}{The intensity cutoff in percentage w.r.t base peak (highest intensity peak) used to filter data}
+\item{intensity_threshold}{The intensity threshold in percentage w.r.t base peak (highest intensity peak) used to filter data}
 
 \item{mz_precision}{The numeric precision of mz which is equal to the number of digits to show on mz annotation}
 
