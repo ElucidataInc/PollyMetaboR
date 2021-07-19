@@ -58,7 +58,7 @@ write_msp <- function(msp_data = NULL, save_path = NULL){
   }
   
   readr::write_file(msp_string, save_path)
-  message(paste0("The msp file is save at: ", sQuote(save_path)))
+  message(paste0("The msp file is saved at: ", sQuote(save_path)))
   
   message("Write MSP Completed...")
   
