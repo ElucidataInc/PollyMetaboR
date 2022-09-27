@@ -24,7 +24,7 @@ get_elements_from_msp(
 A vector of features/compounds
 }
 \description{
-It converts the string text of a single compound msp into the list of msp data for a compound
+It returns the list of elements found in the msp file using the compound key
 }
 \examples{
 get_elements_from_msp(msp_path, compound_key)

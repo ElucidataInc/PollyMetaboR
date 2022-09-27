@@ -1,6 +1,6 @@
 #' get_elements_from_msp
 #'
-#' It converts the string text of a single compound msp into the list of msp data for a compound
+#' It returns the list of elements found in the msp file using the compound key
 #'
 #' @param msp_path The path to msp file
 #' @param compound_key A key name from msp file where features/compounds are present
