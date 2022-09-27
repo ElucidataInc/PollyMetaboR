@@ -4,12 +4,13 @@
 #'
 #' @param msp_path The path to msp file
 #' @param compound A vector of features/compounds to search in the msp file which is optional
+#' @param compound_key A key name from msp file where features/compounds are present
 #' @param exact_match Search exact match (TRUE) or do partial matching (FALSE) of compound names in the msp file
 #' @return A list of msp data
 #' @examples
 #' read_msp(msp_path)
 #' @export
-read_msp <- function(msp_path = NULL, compound = NULL, exact_match = TRUE){
+read_msp <- function(msp_path = NULL, compound = NULL, compound_key = "Name", exact_match = TRUE){
   message("Read MSP Started...")
   require(readr)  
   require(stringi)  
@@ -33,12 +34,18 @@ read_msp <- function(msp_path = NULL, compound = NULL, exact_match = TRUE){
   if (!identical(compound, NULL)){
     if (identical(exact_match, NULL)){ exact_match <- TRUE}  
   }
+
+  if (identical(compound_key, NULL)){
+    compound_key <- "Name"  
+  }  
   
   id_list <- list()
   msp_list <- list()
   
   data_as_str <- readr::read_file(msp_path)
+  compound_key <- gsub("NAME", "Name", compound_key, ignore.case = T)  
   compound_data_list <- strsplit(gsub("Name: ","~Name: ", data_as_str, ignore.case = T), split = "~")[[1]]
+  
   if (!identical(compound, NULL)){
     compound_data_list <- compound_data_list[sapply(compound_data_list, function(x) any(sapply(compound, function(y) any(grepl(y, x, fixed = TRUE)))))]
   }
@@ -55,14 +62,13 @@ read_msp <- function(msp_path = NULL, compound = NULL, exact_match = TRUE){
           id_list[[name_index]] <- compound_msp$Name 
         }
         else {
-          
           if (identical(exact_match, FALSE)){ 
             name_index <- name_index + 1
             msp_list[[name_index]] <- compound_msp
             id_list[[name_index]] <- compound_msp$Name  
           }
           else {
-            if (any(compound_msp$Name %in% compound)){
+            if (any(compound_msp[[compound_key]] %in% compound)){
               name_index <- name_index + 1
               msp_list[[name_index]] <- compound_msp
               id_list[[name_index]] <- compound_msp$Name  

@@ -24,12 +24,12 @@ get_compound_msp <- function(element_msp = NULL){
   
   compound_msp <- list()
   element_msp <- stringi::stri_split_lines(element_msp)[[1]]
-  names_bool <- sapply(element_msp, function(x) grepl(": ", x, fixed = TRUE))
+  names_bool <- sapply(element_msp, function(x) grepl(":", x, fixed = TRUE))
   names_elements <- element_msp[names_bool]
   if (length(names_elements) > 0){
     names_split_list <- lapply(names_elements, function(x){
       name_list <- list()
-      name_split <- stringr::str_trim(stringr::str_split(x, ": ", 2)[[1]])
+      name_split <- stringr::str_trim(stringr::str_split(x, ":", 2)[[1]])
       num_val <- suppressWarnings(as.numeric(name_split[2]))
       if (!is.na(num_val)){
         name_list[[name_split[1]]] <- num_val
@@ -64,8 +64,8 @@ get_compound_msp <- function(element_msp = NULL){
       elements_len <- ncol(peaks_df)
       if (elements_len > 1){
         extra_cols_len <- elements_len - 2
-        if (extra_cols_len > 1){ extra_cols <- paste("other_info", c(1:extra_cols_len), sep = "_")}
-        else if (extra_cols_len == 1){ extra_cols <- "other_info"}
+        if (extra_cols_len > 1){ extra_cols <- paste("comment", c(1:extra_cols_len), sep = "_")}
+        else if (extra_cols_len == 1){ extra_cols <- "comment"}
         else {extra_cols <- NULL}
         spectrum_cols <- c("mz", "intensity")
         colnames(peaks_df)<- c(spectrum_cols, extra_cols)
