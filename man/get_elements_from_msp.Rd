@@ -7,6 +7,7 @@
 get_elements_from_msp(
   msp_path = NULL,
   compound_key = NULL,
+  ignore_case = FALSE,
   load_on_memory = TRUE
 )
 }
@@ -14,6 +15,8 @@ get_elements_from_msp(
 \item{msp_path}{The path to msp file}
 
 \item{compound_key}{A key name from msp file where features/compounds are present}
+
+\item{ignore_case}{Ignore case while searching compound key}
 
 \item{load_on_memory}{Load whole text into a list if TRUE else read lines one by one to save memory}
 }
