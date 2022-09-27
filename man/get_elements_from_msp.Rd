@@ -7,6 +7,7 @@
 get_elements_from_msp(
   msp_path = NULL,
   compound_key = NULL,
+  ignore_case = FALSE,
   load_on_memory = TRUE
 )
 }
@@ -15,13 +16,15 @@ get_elements_from_msp(
 
 \item{compound_key}{A key name from msp file where features/compounds are present}
 
+\item{ignore_case}{Ignore case while searching compound key}
+
 \item{load_on_memory}{Load whole text into a list if TRUE else read lines one by one to save memory}
 }
 \value{
 A vector of features/compounds
 }
 \description{
-It returns the list of elements found in the msp file using the compound key
+It converts the string text of a single compound msp into the list of msp data for a compound
 }
 \examples{
 get_elements_from_msp(msp_path, compound_key)
